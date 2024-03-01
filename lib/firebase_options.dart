@@ -63,6 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '418688149116',
     projectId: 'multilogin2-d03cd',
     storageBucket: 'multilogin2-d03cd.appspot.com',
+    androidClientId: '418688149116-80tf5b0nnv7s6fk6qhif9enohcevcg9o.apps.googleusercontent.com',
+    iosClientId: '418688149116-966fs9sdpdbeekmvm205os08i3kidn74.apps.googleusercontent.com',
     iosBundleId: 'com.loba4.multilogin2',
   );
 }

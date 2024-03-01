@@ -12,7 +12,20 @@
           "package_name": "com.loba4.multilogin2"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "418688149116-80tf5b0nnv7s6fk6qhif9enohcevcg9o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.loba4.multilogin2",
+            "certificate_hash": "d8a5247b8a45249b2744a71e9f035aac017b6227"
+          }
+        },
+        {
+          "client_id": "418688149116-eonrl9ccut8i63l6amegceeanunj374n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCeAibaTC5J-9yX4FN1G4U6sTMWUuHYJiM"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "418688149116-eonrl9ccut8i63l6amegceeanunj374n.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "418688149116-966fs9sdpdbeekmvm205os08i3kidn74.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.loba4.multilogin2"
+              }
+            }
+          ]
         }
       }
     }
