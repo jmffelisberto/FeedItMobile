@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resource>
+    <string name="app_name">MultiLogin</string>
+    <string name="facebook_app_id">426326693308229</string>
+    <string name="fb_login_protocol_scheme">fb426326693308229</string>
+    <string name="facebook_client_token">c00115920af79c9add41fe63a62c787c</string>
+</resource>

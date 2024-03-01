@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -85,6 +87,54 @@ class SignInProvider extends ChangeNotifier {
           case "null":
             _errorCode =
               "Some unexpected error while trying to sign in";
+            _hasError = true;
+            notifyListeners();
+            break;
+          default:
+            _errorCode = e.toString();
+            _hasError = true;
+            notifyListeners();
+        }
+      }
+    } else {
+      _hasError = true;
+      notifyListeners();
+    }
+  }
+
+  // sign in with facebook
+  Future signInWithFacebook() async {
+    final LoginResult result = await facebookAuth.login();
+    // getting the profile
+    final graphResponse = await http.get(Uri.parse(
+        'https://graph.facebook.com/v2.12/me?fields=name,picture.width(800).height(800),first_name,last_name,email&access_token=${result.accessToken!.token}'));
+
+    final profile = jsonDecode(graphResponse.body);
+
+    if (result.status == LoginStatus.success) {
+      try {
+        final OAuthCredential credential =
+        FacebookAuthProvider.credential(result.accessToken!.token);
+        await firebaseAuth.signInWithCredential(credential);
+        // saving the values
+        _name = profile['name'];
+        _email = profile['email'];
+        _imageUrl = profile['picture']['data']['url'];
+        _uid = profile['id'];
+        _hasError = false;
+        _provider = "FACEBOOK";
+        notifyListeners();
+      } on FirebaseAuthException catch (e) {
+        switch (e.code) {
+          case "account-exists-with-different-credential":
+            _errorCode =
+            "You already have an account with us. Use correct provider";
+            _hasError = true;
+            notifyListeners();
+            break;
+
+          case "null":
+            _errorCode = "Some unexpected error while trying to sign in";
             _hasError = true;
             notifyListeners();
             break;

@@ -99,7 +99,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   RoundedLoadingButton(
                       controller: facebookController,
                       successColor: Colors.blue,
-                      onPressed: () {},
+                      onPressed: () {
+                        handleFacebookAuth();
+                      },
                       width: MediaQuery
                           .of(context)
                           .size
@@ -176,6 +178,45 @@ class _LoginScreenState extends State<LoginScreen> {
                         googleController.success();
                         handleAfterSignIn();
                       })));
+            }
+          });
+        }
+      });
+    }
+  }
+
+  Future handleFacebookAuth() async {
+    final signInProvider = context.read<SignInProvider>();
+    final internetProvider = context.read<InternetProvider>();
+    await internetProvider.checkInternetConnection();
+
+    if (internetProvider.hasInternet == false) {
+      openSnackbar(context, "Check your Internet connection", Colors.red);
+      facebookController.reset();
+    } else {
+      await signInProvider.signInWithFacebook().then((value) {
+        if (signInProvider.hasError == true) {
+          openSnackbar(context, signInProvider.errorCode.toString(), Colors.red);
+          facebookController.reset();
+        } else {
+          // checking whether user exists or not
+          signInProvider.checkUserExists().then((value) async {
+            if (value == true) {
+              // user exists
+              await signInProvider.getUserDataFromFirestore(signInProvider.uid).then((value) => signInProvider
+                  .saveDataToSharedPreferences()
+                  .then((value) => signInProvider.setSignIn().then((value) {
+                facebookController.success();
+                handleAfterSignIn();
+              })));
+            } else {
+              // user does not exist
+              signInProvider.saveDataToFirestore().then((value) => signInProvider
+                  .saveDataToSharedPreferences()
+                  .then((value) => signInProvider.setSignIn().then((value) {
+                facebookController.success();
+                handleAfterSignIn();
+              })));
             }
           });
         }
