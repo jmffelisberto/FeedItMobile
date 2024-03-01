@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:multilogin2/provider/internet_provider.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:multilogin2/screens/splash_screen.dart';
@@ -34,9 +35,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: ((context) => SignInProvider()),
         ),
-        //ChangeNotifierProvider(
-        //  create: ((context) => InternetProvider()),
-        //),
+        ChangeNotifierProvider(
+          create: ((context) => InternetProvider()),
+        ),
       ],
       child: const MaterialApp(
         home: SplashScreen(),
