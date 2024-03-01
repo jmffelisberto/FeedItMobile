@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "418688149116",
+    "project_id": "multilogin2-d03cd",
+    "storage_bucket": "multilogin2-d03cd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:418688149116:android:5f5d2e2f1affc2b6484bf9",
+        "android_client_info": {
+          "package_name": "com.loba4.multilogin2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeAibaTC5J-9yX4FN1G4U6sTMWUuHYJiM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
