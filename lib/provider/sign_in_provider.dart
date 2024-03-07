@@ -14,6 +14,7 @@ class SignInProvider extends ChangeNotifier {
   final GoogleSignIn googleSignIn = GoogleSignIn();
 
 
+
   bool _isSignedIn = false;
   bool get isSignedIn => _isSignedIn;
 
@@ -107,7 +108,7 @@ class SignInProvider extends ChangeNotifier {
     final LoginResult result = await facebookAuth.login();
     // getting the profile
     final graphResponse = await http.get(Uri.parse(
-        'https://graph.facebook.com/v2.12/me?fields=name,picture.width(800).height(800),first_name,last_name,email&access_token=${result.accessToken!.token}'));
+        'https://graph.facebook.com/v2.12/me?fields=name,picture,first_name,last_name,email&access_token=${result.accessToken!.token}'));
 
     final profile = jsonDecode(graphResponse.body);
 
@@ -228,5 +229,15 @@ class SignInProvider extends ChangeNotifier {
   Future clearStoredData() async {
     final SharedPreferences s = await SharedPreferences.getInstance();
     s.clear();
+  }
+
+  void phoneNumberUser(User user, email, name) {
+    _name = name;
+    _email = email;
+    _imageUrl =
+    "https://winaero.com/blog/wp-content/uploads/2017/12/User-icon-256-blue.png";
+    _uid = user.phoneNumber;
+    _provider = "PHONE";
+    notifyListeners();
   }
 }

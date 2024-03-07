@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:multilogin2/provider/internet_provider.dart';
 import 'package:multilogin2/screens/home_screen.dart';
+import 'package:multilogin2/screens/phoneauth_screen.dart';
 import 'package:multilogin2/utils/next_screen.dart';
 import 'package:multilogin2/utils/snack_bar.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey _scaffoldKey = GlobalKey<ScaffoldState>();
   final RoundedLoadingButtonController googleController = RoundedLoadingButtonController();
   final RoundedLoadingButtonController facebookController = RoundedLoadingButtonController();
+  final RoundedLoadingButtonController phoneController = RoundedLoadingButtonController();
 
   @override
   Widget build(BuildContext context) {
@@ -120,6 +123,42 @@ class _LoginScreenState extends State<LoginScreen> {
                             width: 15,
                           ),
                           Text("Sign in with Facebook",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500)
+                          ),
+                        ],
+                      )
+                  ),
+                  SizedBox(
+                    height: 10, // for padding
+                  ),
+                  RoundedLoadingButton(
+                      controller: phoneController,
+                      successColor: Colors.blue,
+                      onPressed: () {
+                        nextScreenReplace(context, const PhoneAuthScreen());
+                        phoneController.reset();
+                      },
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width * 0.80,
+                      elevation: 0,
+                      borderRadius: 25,
+                      color: Colors.black,
+                      child: Wrap(
+                        children: const [
+                          Icon(
+                            FontAwesomeIcons.phone,
+                            size: 20,
+                            color: Colors.white,
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          Text("Continue with Phone",
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 15,
