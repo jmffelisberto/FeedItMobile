@@ -44,18 +44,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Image(
-                      image: AssetImage(Config.app_icon),
+                      image: AssetImage(Config.loba_icon),
                       height: 80,
                       width: 80,
                       fit: BoxFit.cover,
                     ),
                     const SizedBox(height: 20),
                     const Text(
-                        "Welcome to FlutterFirebase",
+                        "Welcome to Trial",
                         style: TextStyle(
                             fontSize: 25, fontWeight: FontWeight.w500)),
                     const SizedBox(height: 20),
-                    Text("Learn Authentication with Provider",
+                    Text("Testing login & local to cloud storage",
                         style: TextStyle(fontSize: 15, color: Colors.grey[600]))
                   ],
                 ),
