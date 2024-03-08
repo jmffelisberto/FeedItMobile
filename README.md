@@ -12,4 +12,5 @@ Another trial for skill development purposes.
 
 ### Storage
 
+- Firestore Database Interaction w/ Collections
 - *Coming Soon...*

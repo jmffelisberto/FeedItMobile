@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity/connectivity.dart';
+import 'package:flutter/material.dart';
 import 'package:multilogin2/screens/home_screen.dart';
 import 'package:multilogin2/utils/issue.dart';
 import 'package:multilogin2/utils/next_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SubmitIssueScreen extends StatefulWidget {
   @override
@@ -27,17 +29,64 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     super.dispose();
   }
 
-  void _submitIssue() {
+  void _submitIssue() async {
     String subject = _subjectController.text.trim();
     String description = _descriptionController.text.trim();
 
     if (subject.isNotEmpty && description.isNotEmpty) {
       Issue issue = Issue(subject: subject, description: description);
-      submitIssue(issue);
-      // Clear the text fields after submitting
-      _subjectController.clear();
-      _descriptionController.clear();
-      // Optionally, you can show a confirmation dialog or navigate to another screen
+      var connectivityResult = await Connectivity().checkConnectivity();
+      if (connectivityResult == ConnectivityResult.none) {
+        // Device is offline, store data locally
+        await _storeLocally(issue);
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('No connection available!'),
+            content: Text('Your issue has been stored locally, and will be submitted as soon as you get a connection.'),
+            actions: [
+              TextButton(
+                onPressed: () => nextScreenReplace(context, const HomeScreen()),
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
+      } else {
+        // Device is online, submit data to Firestore
+        await submitIssueToFirestore(issue);
+      }
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Could not submit issue!'),
+          content: Text('An unexpected error occurred. Please try again later!'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+
+  Future<void> _storeLocally(Issue issue) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Store the issue locally using shared_preferences or SQLite
+    // Example using shared_preferences
+    List<String> localIssues = prefs.getStringList('local_issues') ?? [];
+    localIssues.add(issue.toMap().toString());
+    await prefs.setStringList('local_issues', localIssues);
+  }
+
+  Future<void> submitIssueToFirestore(Issue issue) async {
+    try {
+      await FirebaseFirestore.instance.collection('issues').add(issue.toMap());
+      print('Issue submitted successfully');
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -51,13 +100,13 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
           ],
         ),
       );
-    } else {
-      // Show an error message if any of the fields are empty
+    } catch (e) {
+      print('Error submitting issue: $e');
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text('Error'),
-          content: Text('Please fill in all fields.'),
+          title: Text('Could not submit issue!'),
+          content: Text('An unexpected error occured. Sorry, again later!'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
