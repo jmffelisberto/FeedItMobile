@@ -231,9 +231,8 @@ class SignInProvider extends ChangeNotifier {
     s.clear();
   }
 
-  void phoneNumberUser(User user, email, name) {
+  void phoneNumberUser(User user, name) {
     _name = name;
-    _email = email;
     _imageUrl =
     "https://winaero.com/blog/wp-content/uploads/2017/12/User-icon-256-blue.png";
     _uid = user.phoneNumber;

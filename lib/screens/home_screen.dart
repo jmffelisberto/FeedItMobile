@@ -52,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 10,
             ),
             Text(
-              "${sp.email}",
+              sp.provider == 'PHONE' ? sp.uid ?? '' : sp.email ?? '',
               style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w100),
             ),
             const SizedBox(

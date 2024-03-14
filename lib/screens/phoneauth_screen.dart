@@ -20,7 +20,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
   final formKey = GlobalKey<FormState>();
   // controller -> phone, email, name, otp code
   TextEditingController phoneController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
+  //TextEditingController emailController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController otpCodeController = TextEditingController();
 
@@ -87,7 +87,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
                 const SizedBox(
                   height: 10,
                 ),
-                TextFormField(
+                /*TextFormField(
                   validator: (value) {
                     if (value!.isEmpty) {
                       return "Email address cannot be empty";
@@ -109,7 +109,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide: const BorderSide(color: Colors.grey))),
-                ),
+                ),*/
                 const SizedBox(
                   height: 10,
                 ),
@@ -214,7 +214,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
                                   .signInWithCredential(authCredential))
                                   .user!;
                               // save the values
-                              signInProvider.phoneNumberUser(user, emailController.text,
+                              signInProvider.phoneNumberUser(user,
                                   nameController.text);
                               // checking whether user exists,
                               signInProvider.checkUserExists().then((value) async {
