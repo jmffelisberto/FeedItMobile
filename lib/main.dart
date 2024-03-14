@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:multilogin2/provider/internet_provider.dart';
+import 'package:multilogin2/provider/issue_service_provider.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:multilogin2/screens/splash_screen.dart';
@@ -23,6 +24,7 @@ void main() async {
   : await Firebase.initializeApp();
 
   runApp(const MyApp());
+  ConnectivityService();
 }
 
 class MyApp extends StatelessWidget {
