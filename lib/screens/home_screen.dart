@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:multilogin2/provider/sign_in_provider.dart';
 import 'package:multilogin2/screens/issue_submit_screen.dart';
+import 'package:multilogin2/screens/your_issues.dart';
 import 'package:provider/provider.dart';
 import 'package:multilogin2/screens/login_screen.dart';
 import 'package:multilogin2/utils/next_screen.dart';
@@ -109,6 +110,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: const Text("Submit an Issue",
                     style: TextStyle(
                       color: Colors.black,
+                    ))),
+            const SizedBox(
+              height: 5,
+            ),
+            ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black, // Change the color here
+                ),
+                onPressed: () { //change here
+                  nextScreenReplace(context, LocalIssuesScreen());
+                },
+                child: const Text("Your Issues",
+                    style: TextStyle(
+                      color: Colors.white70,
                     )))
           ],
         ),

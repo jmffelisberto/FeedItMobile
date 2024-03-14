@@ -6,17 +6,24 @@ class Issue {
 
   Issue({required this.subject, required this.description});
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'subject': subject,
-      'description': description
+      'description': description,
     };
+  }
+
+  factory Issue.fromJson(Map<String, dynamic> json) {
+    return Issue(
+      subject: json['subject'],
+      description: json['description'],
+    );
   }
 }
 
 void submitIssue(Issue issue) async {
   try {
-    await FirebaseFirestore.instance.collection('issues').add(issue.toMap());
+    await FirebaseFirestore.instance.collection('issues').add(issue.toJson());
     print('Issue submitted successfully');
   } catch (e) {
     print('Error submitting issue: $e');

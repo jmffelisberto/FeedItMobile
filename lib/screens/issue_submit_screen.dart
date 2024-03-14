@@ -5,6 +5,7 @@ import 'package:multilogin2/screens/home_screen.dart';
 import 'package:multilogin2/utils/issue.dart';
 import 'package:multilogin2/utils/next_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class SubmitIssueScreen extends StatefulWidget {
   @override
@@ -74,18 +75,9 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
   }
 
 
-  Future<void> _storeLocally(Issue issue) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    // Store the issue locally using shared_preferences or SQLite
-    // Example using shared_preferences
-    List<String> localIssues = prefs.getStringList('local_issues') ?? [];
-    localIssues.add(issue.toMap().toString());
-    await prefs.setStringList('local_issues', localIssues);
-  }
-
   Future<void> submitIssueToFirestore(Issue issue) async {
     try {
-      await FirebaseFirestore.instance.collection('issues').add(issue.toMap());
+      await FirebaseFirestore.instance.collection('issues').add(issue.toJson());
       print('Issue submitted successfully');
       showDialog(
         context: context,
@@ -117,6 +109,19 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
       );
     }
   }
+
+
+
+  Future<void> _storeLocally(Issue issue) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Serialize the issue object into a JSON string
+    String jsonIssue = jsonEncode(issue.toJson());
+    // Store the JSON string in shared preferences
+    List<String> localIssues = prefs.getStringList('local_issues') ?? [];
+    localIssues.add(jsonIssue);
+    await prefs.setStringList('local_issues', localIssues);
+  }
+
 
   @override
   Widget build(BuildContext context) {
