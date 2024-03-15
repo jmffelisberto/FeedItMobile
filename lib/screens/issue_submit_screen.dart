@@ -34,8 +34,9 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     String subject = _subjectController.text.trim();
     String description = _descriptionController.text.trim();
 
+
     if (subject.isNotEmpty && description.isNotEmpty) {
-      Issue issue = Issue(subject: subject, description: description);
+      Issue issue = Issue(subject: subject, description: description, createdAt: Timestamp.now());
       var connectivityResult = await Connectivity().checkConnectivity();
       if (connectivityResult == ConnectivityResult.none) {
         // Device is offline, store data locally

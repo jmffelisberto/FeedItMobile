@@ -12,14 +12,13 @@ class LocalIssuesScreen extends StatefulWidget {
 
 class _LocalIssuesScreenState extends State<LocalIssuesScreen> {
   List<Issue> _localIssues = [];
-  List<Issue> _cloudIssues = []; // Placeholder for cloud issues
+  List<Issue> _cloudIssues = [];
 
   @override
   void initState() {
     super.initState();
     _loadLocalIssues();
-    // Fetch cloud issues
-    _fetchCloudIssues(); // You need to implement this method
+    _fetchCloudIssues();
   }
 
   Future<void> _loadLocalIssues() async {
@@ -40,12 +39,18 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> {
   Future<void> _fetchCloudIssues() async {
     try {
       QuerySnapshot querySnapshot =
-      await FirebaseFirestore.instance.collection('issues').get();
+      await FirebaseFirestore.instance.collection('issues').orderBy('createdAt', descending: true).get();
 
       List<Issue> cloudIssues = querySnapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        return Issue.fromJson(data);
+        Timestamp createdAt = data['createdAt'];
+        return Issue(
+          subject: data['subject'],
+          description: data['description'],
+          createdAt: createdAt,
+        );
       }).toList();
+
       setState(() {
         _cloudIssues = cloudIssues;
       });
@@ -55,6 +60,10 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> {
       print('Error fetching cloud issues: $e');
     }
   }
+
+
+
+
 
   @override
   Widget build(BuildContext context) {

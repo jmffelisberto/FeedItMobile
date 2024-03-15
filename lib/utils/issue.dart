@@ -7,13 +7,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Issue {
   final String subject;
   final String description;
+  final Timestamp createdAt;
 
-  Issue({required this.subject, required this.description});
+  Issue({
+    required this.subject,
+    required this.description,
+    required this.createdAt,
+  });
 
   Map<String, dynamic> toJson() {
     return {
       'subject': subject,
       'description': description,
+      'createdAt': createdAt,
     };
   }
 
@@ -21,6 +27,7 @@ class Issue {
     return Issue(
       subject: json['subject'],
       description: json['description'],
+      createdAt: json['createdAt'],
     );
   }
 
@@ -53,7 +60,7 @@ class Issue {
   }
 
   static void checkInternetConnectivityPeriodically() {
-    const duration = Duration(seconds: 3); // Adjust the duration as needed
+    const duration = Duration(seconds: 3);
     Timer.periodic(duration, (Timer timer) async {
       var isConnected = await hasInternetConnection();
       if (isConnected) {
