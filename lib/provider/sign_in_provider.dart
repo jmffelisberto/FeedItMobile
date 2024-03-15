@@ -120,7 +120,7 @@ class SignInProvider extends ChangeNotifier {
         // saving the values
         _name = profile['name'];
         _email = profile['email'];
-        _imageUrl = profile['picture']['data']['url'];
+        _imageUrl = profile!['picture']['data']['url'];
         _uid = profile['id'];
         _hasError = false;
         _provider = "FACEBOOK";
@@ -218,7 +218,7 @@ class SignInProvider extends ChangeNotifier {
   Future userSignOut() async {
     await firebaseAuth.signOut;
     await googleSignIn.signOut();
-    //await facebookAuth.logOut();
+    //await facebookAuth.logOut(); --com este comentário funciona
 
     _isSignedIn = false;
     notifyListeners();

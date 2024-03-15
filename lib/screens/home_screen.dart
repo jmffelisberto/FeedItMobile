@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:multilogin2/provider/sign_in_provider.dart';
 import 'package:multilogin2/screens/issue_submit_screen.dart';
-import 'package:multilogin2/screens/your_issues.dart';
+import 'package:multilogin2/screens/your_issues_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:multilogin2/screens/login_screen.dart';
 import 'package:multilogin2/utils/next_screen.dart';
