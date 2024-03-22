@@ -7,29 +7,33 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Issue {
   final String subject;
   final String description;
-  final Timestamp createdAt;
+  final Timestamp? createdAt;
 
   Issue({
     required this.subject,
     required this.description,
-    required this.createdAt,
+    this.createdAt,
   });
 
   Map<String, dynamic> toJson() {
-    return {
+    Map<String, dynamic> json = {
       'subject': subject,
       'description': description,
-      'createdAt': createdAt,
     };
+    if (createdAt != null) {
+      json['createdAt'] = createdAt;
+    }
+    return json;
   }
 
   factory Issue.fromJson(Map<String, dynamic> json) {
     return Issue(
       subject: json['subject'],
       description: json['description'],
-      createdAt: json['createdAt'],
+      createdAt: json['createdAt'] != null ? Timestamp.fromMillisecondsSinceEpoch(json['createdAt']) : null,
     );
   }
+
 
   static Future<void> submitLocalIssues() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

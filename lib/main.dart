@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:multilogin2/provider/internet_provider.dart';
 import 'package:multilogin2/provider/issue_service_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:multilogin2/screens/splash_screen.dart';
@@ -23,8 +24,15 @@ void main() async {
     ))
   : await Firebase.initializeApp();
 
+  eliminateLocalInstances();
+
   runApp(const MyApp());
   ConnectivityService();
+}
+
+Future<void> eliminateLocalInstances() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.remove('local_issues');
 }
 
 class MyApp extends StatelessWidget {

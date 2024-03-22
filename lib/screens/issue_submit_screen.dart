@@ -85,18 +85,19 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     }
   }
 
-
-
   Future<void> _storeLocally(Issue issue) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     // Serialize the issue object into a JSON string
-    String jsonIssue = jsonEncode(issue.toJson());
+    Map<String, dynamic> jsonIssue = issue.toJson(); // Convert to JSON map
+    if (issue.createdAt != null) {
+      // Only store createdAt if it's not null
+      jsonIssue['createdAt'] = issue.createdAt!.millisecondsSinceEpoch;
+    }
     // Store the JSON string in shared preferences
     List<String> localIssues = prefs.getStringList('local_issues') ?? [];
-    localIssues.add(jsonIssue);
+    localIssues.add(jsonEncode(jsonIssue));
     await prefs.setStringList('local_issues', localIssues);
   }
-
 
   @override
   Widget build(BuildContext context) {
