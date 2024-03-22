@@ -7,7 +7,6 @@ import 'package:multilogin2/screens/phoneauth_screen.dart';
 import 'package:multilogin2/utils/next_screen.dart';
 import 'package:multilogin2/utils/snack_bar.dart';
 import 'package:provider/provider.dart';
-//import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
 import 'package:multilogin2/utils/config.dart';
 

@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:multilogin2/screens/home_screen.dart';
+import 'package:multilogin2/screens/your_issues_screen.dart';
 import 'package:multilogin2/utils/issue.dart';
 import 'package:multilogin2/utils/next_screen.dart';
+import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
@@ -15,6 +18,8 @@ class SubmitIssueScreen extends StatefulWidget {
 class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
   late TextEditingController _subjectController;
   late TextEditingController _descriptionController;
+  final RoundedLoadingButtonController submitController = RoundedLoadingButtonController();
+
 
   @override
   void initState() {
@@ -41,37 +46,17 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
       if (connectivityResult == ConnectivityResult.none) {
         // Device is offline, store data locally
         await _storeLocally(issue);
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text('No connection available!'),
-            content: Text('Your issue has been stored locally, and will be submitted as soon as you get a connection.'),
-            actions: [
-              TextButton(
-                onPressed: () => nextScreenReplace(context, const HomeScreen()),
-                child: Text('OK'),
-              ),
-            ],
-          ),
-        );
+        await Future.delayed(Duration(milliseconds: 500));
+        submitController.success();
+        nextScreenReplace(context, LocalIssuesScreen(initialTabIndex: 0));
       } else {
         // Device is online, submit data to Firestore
+        submitController.success();
         await submitIssueToFirestore(issue);
       }
     } else {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Could not submit issue!'),
-          content: Text('An unexpected error occurred. Please try again later!'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('OK'),
-            ),
-          ],
-        ),
-      );
+      await Future.delayed(Duration(milliseconds: 500));
+      submitController.error();
     }
   }
 
@@ -80,19 +65,8 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     try {
       await FirebaseFirestore.instance.collection('issues').add(issue.toJson());
       print('Issue submitted successfully');
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Issue Submitted'),
-          content: Text('Your issue has been submitted successfully!'),
-          actions: [
-            TextButton(
-              onPressed: () => nextScreenReplace(context, const HomeScreen()),
-              child: Text('OK'),
-            ),
-          ],
-        ),
-      );
+      await Future.delayed(Duration(milliseconds: 500));
+      nextScreenReplace(context, LocalIssuesScreen(initialTabIndex: 1));
     } catch (e) {
       print('Error submitting issue: $e');
       showDialog(
@@ -146,10 +120,39 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
               maxLines: 5,
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _submitIssue,
-              child: Text('Submit'),
+            RoundedLoadingButton(
+                controller: submitController,
+                successColor: Colors.green,
+                errorColor: Colors.red,
+                onPressed: () async {
+                  submitController.start();
+                  await Future.delayed(Duration(milliseconds: 500));
+                  _submitIssue();
+                },
+                width: MediaQuery.of(context).size.width * 0.30,
+                elevation: 0,
+                borderRadius: 25,
+                color: Colors.grey,
+                child: Wrap(
+                  children: const [
+                    Icon(
+                      FontAwesomeIcons.boxOpen,
+                      size: 20,
+                      color: Colors.black,
+                    ),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    Text("Submit",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500)
+                    ),
+                  ],
+                )
             ),
+
           ],
         ),
       ),

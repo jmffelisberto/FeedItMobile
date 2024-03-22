@@ -6,6 +6,10 @@ import 'package:multilogin2/utils/issue.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalIssuesScreen extends StatefulWidget {
+  final int initialTabIndex;
+
+  LocalIssuesScreen({Key? key, this.initialTabIndex = 0}) : super(key: key);
+
   @override
   _LocalIssuesScreenState createState() => _LocalIssuesScreenState();
 }
@@ -19,6 +23,13 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> {
     super.initState();
     _loadLocalIssues();
     _fetchCloudIssues();
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      _selectTab(widget.initialTabIndex);
+    });
+  }
+
+  void _selectTab(int index) {
+    DefaultTabController.of(context)?.animateTo(index);
   }
 
   Future<void> _loadLocalIssues() async {
@@ -68,7 +79,8 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2, // Number of tabs
+      length: 2,
+      initialIndex: widget.initialTabIndex,
       child: Scaffold(
         appBar: AppBar(
           title: Text('Issues'),
