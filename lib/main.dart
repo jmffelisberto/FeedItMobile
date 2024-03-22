@@ -15,20 +15,21 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   Platform.isAndroid
-    ? await Firebase.initializeApp(
-    options: FirebaseOptions(
-      apiKey: "AIzaSyCeAibaTC5J-9yX4FN1G4U6sTMWUuHYJiM",
-      appId: "1:418688149116:android:5f5d2e2f1affc2b6484bf9",
-      messagingSenderId: "418688149116",
-      projectId: "multilogin2-d03cd",
-    ))
-  : await Firebase.initializeApp();
+      ? await Firebase.initializeApp(
+      options: FirebaseOptions(
+        apiKey: "AIzaSyCeAibaTC5J-9yX4FN1G4U6sTMWUuHYJiM",
+        appId: "1:418688149116:android:5f5d2e2f1affc2b6484bf9",
+        messagingSenderId: "418688149116",
+        projectId: "multilogin2-d03cd",
+      ))
+      : await Firebase.initializeApp();
 
   eliminateLocalInstances();
 
   runApp(const MyApp());
   ConnectivityService();
 }
+
 
 Future<void> eliminateLocalInstances() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
