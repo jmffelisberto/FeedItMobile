@@ -23,8 +23,9 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> with TickerProvid
   List<Issue> _cloudIssues = [];
   late ConnectivityService _connectivityService;
   late AnimationController _animationController;
+  bool _isSubmittingLocalIssues = false;
 
-  bool _hasConnection = true; // Default to true assuming initial connection
+  bool _hasConnection = false; // Default to true assuming initial connection
 
   @override
   void initState() {
@@ -77,15 +78,34 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> with TickerProvid
   }
 
   void _fetchCloudIssues() async {
-    //await Issue.submitLocalIssues(); // Submit local issues to the cloud
-    await _loadCloudIssues(); // Fetch cloud issues to refresh the UI
-    await eliminateLocalInstances(); // Remove local issues from SharedPreferences
-    await _loadLocalIssues(); // Reload local issues to reflect changes
+    // Set _isSubmittingLocalIssues to true to trigger the rotating icon
+    _isSubmittingLocalIssues = true;
+    setState(() {});
+
+    // Submit local issues to the cloud
+    await Issue.submitLocalIssues();
+
+    // Fetch cloud issues to refresh the UI
+    await _loadCloudIssues();
+
+    // Remove local issues from SharedPreferences
+    await eliminateLocalInstances();
+
+    // Reload local issues to reflect changes
+    await _loadLocalIssues();
+
+    // Check connectivity and update _hasConnection accordingly
     bool hasConnection = await _connectivityService.checkConnectivity();
     setState(() {
       _hasConnection = hasConnection;
     });
+
+    // Set _isSubmittingLocalIssues to false to stop the rotating icon
+    _isSubmittingLocalIssues = false;
+    setState(() {});
   }
+
+
 
   Future<void> _loadCloudIssues() async {
     try {
@@ -135,7 +155,7 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> with TickerProvid
                 onPressed: () {},
               ),
             // Display rotating icon if there's connection and local issues are being submitted
-            if (_hasConnection && _localIssues.isNotEmpty)
+            if (_isSubmittingLocalIssues)
               RotationTransition(
                 turns: _animationController,
                 child: Icon(Icons.sync),
