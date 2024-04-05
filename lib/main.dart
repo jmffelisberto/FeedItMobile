@@ -24,7 +24,7 @@ void main() async {
       ))
       : await Firebase.initializeApp();
 
-  eliminateLocalInstances();
+  //eliminateLocalInstances();
 
   runApp(const MyApp());
   ConnectivityService();

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity/connectivity.dart'; // Import connectivity package
 import 'package:flutter/material.dart';
 import 'package:multilogin2/main.dart';
 import 'package:multilogin2/provider/issue_service_provider.dart';
@@ -17,10 +18,13 @@ class LocalIssuesScreen extends StatefulWidget {
   _LocalIssuesScreenState createState() => _LocalIssuesScreenState();
 }
 
-class _LocalIssuesScreenState extends State<LocalIssuesScreen> {
+class _LocalIssuesScreenState extends State<LocalIssuesScreen> with TickerProviderStateMixin {
   List<Issue> _localIssues = [];
   List<Issue> _cloudIssues = [];
   late ConnectivityService _connectivityService;
+  late AnimationController _animationController;
+
+  bool _hasConnection = true; // Default to true assuming initial connection
 
   @override
   void initState() {
@@ -30,12 +34,30 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> {
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       _selectTab(widget.initialTabIndex);
     });
-    _connectivityService = ConnectivityService(fetchCloudIssues: _fetchCloudIssues);
+
+    // Initialize the connectivity service
+    _connectivityService = ConnectivityService(onConnectionRestored: () {
+      if (_localIssues.isNotEmpty) {
+        _fetchCloudIssues();
+      }
+      setState(() {
+        _hasConnection = true;
+      });
+    });
+
+
+    // Initialize the animation controller for the rotating icon
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 2), // Adjust the duration as needed
+    )..repeat(); // Repeat the animation indefinitely
   }
+
 
   @override
   void dispose() {
     _connectivityService.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -55,10 +77,14 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> {
   }
 
   void _fetchCloudIssues() async {
-    await Issue.submitLocalIssues(); // Submit local issues to the cloud
+    //await Issue.submitLocalIssues(); // Submit local issues to the cloud
     await _loadCloudIssues(); // Fetch cloud issues to refresh the UI
     await eliminateLocalInstances(); // Remove local issues from SharedPreferences
     await _loadLocalIssues(); // Reload local issues to reflect changes
+    bool hasConnection = await _connectivityService.checkConnectivity();
+    setState(() {
+      _hasConnection = hasConnection;
+    });
   }
 
   Future<void> _loadCloudIssues() async {
@@ -101,6 +127,20 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> {
               );
             },
           ),
+          actions: [
+            // Display no connection icon if there's no connection
+            if (!_hasConnection)
+              IconButton(
+                icon: Icon(Icons.signal_wifi_off),
+                onPressed: () {},
+              ),
+            // Display rotating icon if there's connection and local issues are being submitted
+            if (_hasConnection && _localIssues.isNotEmpty)
+              RotationTransition(
+                turns: _animationController,
+                child: Icon(Icons.sync),
+              ),
+          ],
           bottom: TabBar(
             tabs: [
               Tab(text: 'Local Issues'),
@@ -142,4 +182,3 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> {
     );
   }
 }
-

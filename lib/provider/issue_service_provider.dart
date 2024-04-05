@@ -1,21 +1,29 @@
 import 'dart:async';
 import 'package:multilogin2/utils/issue.dart';
+import 'package:connectivity/connectivity.dart';
 
 class ConnectivityService {
-  static const _checkInterval = Duration(seconds: 30);
+  static const _checkInterval = Duration(seconds: 3);
   late Timer _connectivityTimer;
-  final void Function()? fetchCloudIssues;
+  final void Function()? onConnectionRestored;
 
-  ConnectivityService({this.fetchCloudIssues}) {
+  ConnectivityService({this.onConnectionRestored, void Function()? fetchCloudIssues}) {
     _connectivityTimer = Timer.periodic(_checkInterval, (timer) {
-      _checkInternetConnectivity();
+      _checkInternetConnectivity(fetchCloudIssues);
     });
   }
 
-  void _checkInternetConnectivity() async {
-    if (await Issue.hasInternetConnection()) {
-      await Issue.submitLocalIssues();
-      fetchCloudIssues?.call(); // Call the callback function if it's not null
+  Future<bool> checkConnectivity() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    return connectivityResult != ConnectivityResult.none;
+  }
+
+  void _checkInternetConnectivity(void Function()? fetchCloudIssues) async {
+    if (await checkConnectivity()) {
+      // Call fetchCloudIssues callback if it's not null
+      fetchCloudIssues?.call();
+      // Call onConnectionRestored callback if it's not null
+      onConnectionRestored?.call();
     }
   }
 
