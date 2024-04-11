@@ -29,149 +29,208 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Padding(
-          padding:
-          const EdgeInsets.only(left: 40, right: 40, top: 90, bottom: 30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Flexible(
-                flex: 2,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      backgroundColor: Colors.transparent,
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment(0.0, 0.40),
+            colors: [Colors.black, Colors.white],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: 80),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Image(
-                      image: AssetImage(Config.loba_icon),
+                      image: AssetImage(Config.loba_icon_white),
                       height: 80,
                       width: 80,
                       fit: BoxFit.cover,
                     ),
                     const SizedBox(height: 20),
-                    const Text(
-                        "Welcome to Trial",
+                    const Text("Welcome to Trial",
                         style: TextStyle(
                             fontSize: 25, fontWeight: FontWeight.w500)),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 5),
                     Text("Testing login & local to cloud storage",
-                        style: TextStyle(fontSize: 15, color: Colors.grey[600]))
+                        style: TextStyle(
+                            fontSize: 10, color: Colors.black)),
                   ],
                 ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  RoundedLoadingButton(
-                      controller: googleController,
-                      successColor: Colors.red,
-                      onPressed: () {
-                        handleGoogleSignIn();
-                      },
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width * 0.80,
-                      elevation: 0,
-                      borderRadius: 25,
-                      color: Colors.red,
-                      child: Wrap(
-                        children: const [
-                          Icon(
-                            FontAwesomeIcons.google,
-                            size: 20,
-                            color: Colors.white,
+                SizedBox(height: 50),
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(60),
+                        topRight: Radius.circular(60),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(30),
+                      child: Column(
+                        children: [
+                          TextField(
+                            decoration: InputDecoration(
+                              hintText: "Write Your Email",
+                              hintStyle: TextStyle(color: Colors.grey),
+                              border: InputBorder.none,
+                              filled: true,
+                              fillColor: Colors.grey[200],
+                              contentPadding: EdgeInsets.all(15),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.transparent),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.transparent),
+                              ),
+                            ),
                           ),
-                          SizedBox(
-                            width: 15,
+                          SizedBox(height: 10),
+                          TextField(
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              hintText: "Password",
+                              hintStyle: TextStyle(color: Colors.grey),
+                              border: InputBorder.none,
+                              filled: true,
+                              fillColor: Colors.grey[200],
+                              contentPadding: EdgeInsets.all(15),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.transparent),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.transparent),
+                              ),
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  // Do something
+                                },
+                                icon: Icon(
+                                  Icons.arrow_forward_outlined,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
                           ),
-                          Text("Sign in with Google",
+                          SizedBox(height: 20),
+                          Text("Forgot your password?",
                               style: TextStyle(
+                                  fontSize: 10, color: Colors.grey)),
+                          SizedBox(height: 20),
+                          RoundedLoadingButton(
+                            controller: googleController,
+                            successColor: Colors.red,
+                            onPressed: () {
+                              handleGoogleSignIn();
+                            },
+                            width: MediaQuery.of(context).size.width * 0.80,
+                            borderRadius: 10,
+                            color: Colors.red,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(
+                                  FontAwesomeIcons.google,
+                                  size: 20,
                                   color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500)
+                                ),
+                                SizedBox(width: 10),
+                                Text(
+                                  "Sign in with Google",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
-                      )
-                  ),
-                  SizedBox(
-                    height: 10, // for padding
-                  ),
-                  RoundedLoadingButton(
-                      controller: facebookController,
-                      successColor: Colors.blue,
-                      onPressed: () {
-                        handleFacebookAuth();
-                      },
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width * 0.80,
-                      elevation: 0,
-                      borderRadius: 25,
-                      color: Colors.blue,
-                      child: Wrap(
-                        children: const [
-                          Icon(
-                            FontAwesomeIcons.facebook,
-                            size: 20,
-                            color: Colors.white,
-                          ),
-                          SizedBox(
-                            width: 15,
-                          ),
-                          Text("Sign in with Facebook",
-                              style: TextStyle(
+                          SizedBox(height: 10),
+                          RoundedLoadingButton(
+                            controller: facebookController,
+                            successColor: Colors.blue,
+                            onPressed: () {
+                              handleFacebookAuth();
+                            },
+                            width: MediaQuery.of(context).size.width * 0.80,
+                            borderRadius: 10,
+                            color: Colors.blue,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(
+                                  FontAwesomeIcons.facebook,
+                                  size: 20,
                                   color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500)
+                                ),
+                                SizedBox(width: 10),
+                                Text(
+                                  "Sign in with Facebook",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
-                      )
-                  ),
-                  SizedBox(
-                    height: 10, // for padding
-                  ),
-                  RoundedLoadingButton(
-                      controller: phoneController,
-                      successColor: Colors.blue,
-                      onPressed: () {
-                        nextScreenReplace(context, const PhoneAuthScreen());
-                        phoneController.reset();
-                      },
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width * 0.80,
-                      elevation: 0,
-                      borderRadius: 25,
-                      color: Colors.black,
-                      child: Wrap(
-                        children: const [
-                          Icon(
-                            FontAwesomeIcons.phone,
-                            size: 20,
-                            color: Colors.white,
-                          ),
-                          SizedBox(
-                            width: 15,
-                          ),
-                          Text("Continue with Phone",
-                              style: TextStyle(
+                          SizedBox(height: 10),
+                          RoundedLoadingButton(
+                            controller: phoneController,
+                            successColor: Colors.lightGreen,
+                            onPressed: () {
+                              nextScreenReplace(context, const PhoneAuthScreen());
+                              phoneController.reset();
+                            },
+                            width: MediaQuery.of(context).size.width * 0.80,
+                            borderRadius: 10,
+                            color: Colors.black,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(
+                                  FontAwesomeIcons.phone,
+                                  size: 20,
                                   color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500)
+                                ),
+                                SizedBox(width: 10),
+                                Text(
+                                  "Continue with Phone",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
+                          SizedBox(height: 30),
                         ],
-                      )
+                      ),
+                    ),
                   ),
-                  SizedBox(
-                    height: 30, // for padding
-                  ),
-                ],
-              )
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
