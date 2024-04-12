@@ -24,6 +24,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final RoundedLoadingButtonController googleController = RoundedLoadingButtonController();
   final RoundedLoadingButtonController facebookController = RoundedLoadingButtonController();
   final RoundedLoadingButtonController phoneController = RoundedLoadingButtonController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
@@ -81,11 +84,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       padding: EdgeInsets.all(30),
                       child: Column(
                         children: [
-                          TextField(
+                          TextFormField(
+                            controller: _emailController,
                             decoration: InputDecoration(
-                              hintText: "Write Your Email",
+                              hintText: 'Write Your Email',
                               hintStyle: TextStyle(color: Colors.grey),
-                              border: InputBorder.none,
                               filled: true,
                               fillColor: Colors.grey[200],
                               contentPadding: EdgeInsets.all(15),
@@ -100,12 +103,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           SizedBox(height: 10),
-                          TextField(
-                            obscureText: true,
+                          TextFormField(
+                            controller: _passwordController,
                             decoration: InputDecoration(
-                              hintText: "Password",
+                              hintText: 'Password',
                               hintStyle: TextStyle(color: Colors.grey),
-                              border: InputBorder.none,
                               filled: true,
                               fillColor: Colors.grey[200],
                               contentPadding: EdgeInsets.all(15),
@@ -127,6 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                             ),
+                            obscureText: true,
                           ),
                           SizedBox(height: 20),
                           Text("Forgot your password?",
@@ -202,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                             width: MediaQuery.of(context).size.width * 0.80,
                             borderRadius: 10,
-                            color: Colors.black,
+                            color: Colors.lightGreen,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: const [
