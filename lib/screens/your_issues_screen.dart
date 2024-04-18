@@ -132,71 +132,82 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> with TickerProvid
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      initialIndex: widget.initialTabIndex,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Issues'),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => HomeScreen()),
-              );
-            },
+    return WillPopScope(
+      onWillPop: () async {
+        // Handle the back button press here
+        // Navigate back to the previous page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+        return false; // Prevent the default back button behavior
+      },
+      child: DefaultTabController(
+        length: 2,
+        initialIndex: widget.initialTabIndex,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text('Issues'),
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomeScreen()),
+                );
+              },
+            ),
+            actions: [
+              // Display no connection icon if there's no connection
+              if (!_hasConnection)
+                IconButton(
+                  icon: Icon(Icons.signal_wifi_off),
+                  onPressed: () {},
+                ),
+              // Display rotating icon if there's connection and local issues are being submitted
+              if (_isSubmittingLocalIssues)
+                RotationTransition(
+                  turns: _animationController,
+                  child: Icon(Icons.sync),
+                ),
+            ],
+            bottom: TabBar(
+              tabs: [
+                Tab(text: 'Local Issues'),
+                Tab(text: 'Cloud Issues'),
+              ],
+            ),
           ),
-          actions: [
-            // Display no connection icon if there's no connection
-            if (!_hasConnection)
-              IconButton(
-                icon: Icon(Icons.signal_wifi_off),
-                onPressed: () {},
+          body: TabBarView(
+            children: [
+              // Local Issues Tab
+              _localIssues.isEmpty
+                  ? Center(child: Text('No local issues found'))
+                  : ListView.builder(
+                itemCount: _localIssues.length,
+                itemBuilder: (context, index) {
+                  final issue = _localIssues[index];
+                  return ListTile(
+                    title: Text(issue.subject),
+                    subtitle: Text(issue.description),
+                  );
+                },
               ),
-            // Display rotating icon if there's connection and local issues are being submitted
-            if (_isSubmittingLocalIssues)
-              RotationTransition(
-                turns: _animationController,
-                child: Icon(Icons.sync),
+              // Cloud Issues Tab
+              _cloudIssues.isEmpty
+                  ? Center(child: Text('No cloud issues found'))
+                  : ListView.builder(
+                itemCount: _cloudIssues.length,
+                itemBuilder: (context, index) {
+                  final issue = _cloudIssues[index];
+                  return ListTile(
+                    title: Text(issue.subject),
+                    subtitle: Text(issue.description),
+                  );
+                },
               ),
-          ],
-          bottom: TabBar(
-            tabs: [
-              Tab(text: 'Local Issues'),
-              Tab(text: 'Cloud Issues'),
             ],
           ),
-        ),
-        body: TabBarView(
-          children: [
-            // Local Issues Tab
-            _localIssues.isEmpty
-                ? Center(child: Text('No local issues found'))
-                : ListView.builder(
-              itemCount: _localIssues.length,
-              itemBuilder: (context, index) {
-                final issue = _localIssues[index];
-                return ListTile(
-                  title: Text(issue.subject),
-                  subtitle: Text(issue.description),
-                );
-              },
-            ),
-            // Cloud Issues Tab
-            _cloudIssues.isEmpty
-                ? Center(child: Text('No cloud issues found'))
-                : ListView.builder(
-              itemCount: _cloudIssues.length,
-              itemBuilder: (context, index) {
-                final issue = _cloudIssues[index];
-                return ListTile(
-                  title: Text(issue.subject),
-                  subtitle: Text(issue.description),
-                );
-              },
-            ),
-          ],
         ),
       ),
     );

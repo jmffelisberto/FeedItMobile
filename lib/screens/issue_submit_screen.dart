@@ -101,62 +101,73 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Submit Issue'),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextFormField(
-              controller: _subjectController,
-              decoration: InputDecoration(labelText: 'Subject'),
-            ),
-            SizedBox(height: 20),
-            TextFormField(
-              controller: _descriptionController,
-              decoration: InputDecoration(labelText: 'Description'),
-              maxLines: 5,
-            ),
-            SizedBox(height: 20),
-            RoundedLoadingButton(
-                controller: submitController,
-                successColor: Colors.green,
-                errorColor: Colors.red,
-                onPressed: () async {
-                  submitController.start();
-                  await Future.delayed(Duration(milliseconds: 500));
-                  _submitIssue();
-                },
-                width: MediaQuery.of(context).size.width * 0.30,
-                elevation: 0,
-                borderRadius: 25,
-                color: Colors.grey,
-                child: Wrap(
-                  children: const [
-                    Icon(
-                      FontAwesomeIcons.boxOpen,
-                      size: 20,
-                      color: Colors.black,
-                    ),
-                    SizedBox(
-                      width: 15,
-                    ),
-                    Text("Submit",
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500)
-                    ),
-                  ],
-                )
-            ),
-
-          ],
+    return WillPopScope(
+      onWillPop: () async {
+        // Handle the back button press here
+        // Navigate back to the previous page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+        return false; // Prevent the default back button behavior
+      },
+      child:  Scaffold(
+        appBar: AppBar(
+          title: Text('Submit Issue'),
         ),
-      ),
+        body: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextFormField(
+                controller: _subjectController,
+                decoration: InputDecoration(labelText: 'Subject'),
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                controller: _descriptionController,
+                decoration: InputDecoration(labelText: 'Description'),
+                maxLines: 5,
+              ),
+              SizedBox(height: 20),
+              RoundedLoadingButton(
+                  controller: submitController,
+                  successColor: Colors.green,
+                  errorColor: Colors.red,
+                  onPressed: () async {
+                    submitController.start();
+                    await Future.delayed(Duration(milliseconds: 500));
+                    _submitIssue();
+                  },
+                  width: MediaQuery.of(context).size.width * 0.30,
+                  elevation: 0,
+                  borderRadius: 25,
+                  color: Colors.grey,
+                  child: Wrap(
+                    children: const [
+                      Icon(
+                        FontAwesomeIcons.boxOpen,
+                        size: 20,
+                        color: Colors.black,
+                      ),
+                      SizedBox(
+                        width: 15,
+                      ),
+                      Text("Submit",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500)
+                      ),
+                    ],
+                  )
+              ),
+
+            ],
+          ),
+        ),
+      )
     );
   }
 }

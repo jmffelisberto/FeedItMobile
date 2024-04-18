@@ -50,8 +50,19 @@ class MyApp extends StatelessWidget {
           create: ((context) => InternetProvider()),
         ),
       ],
-      child: const MaterialApp(
-        home: SplashScreen(),
+      child: MaterialApp(
+        home: WillPopScope(
+          onWillPop: () async {
+            // Handle back button press
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+              return false; // Return false to indicate that we handled the back button press
+            } else {
+              return true; // Return true to allow the default back button behavior
+            }
+          },
+          child: const SplashScreen(),
+        ),
         debugShowCheckedModeBanner: false,
       ),
     );
