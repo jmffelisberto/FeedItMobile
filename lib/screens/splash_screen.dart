@@ -37,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
       body: SafeArea(
         child: Center(
           child: Image(
-            image: AssetImage(Config.app_icon),
+            image: AssetImage(Config.loba_icon_black),
             height: 80,
             width: 80,
           )

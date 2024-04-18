@@ -80,6 +80,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     FontAwesomeIcons.phone,
                     color: Colors.green,
                   ),
+                if (sp.provider == "EMAIL")
+                  Icon(
+                    Icons.email,
+                    color: Colors.black,
+                  ),
               ],
             ),
             const SizedBox(

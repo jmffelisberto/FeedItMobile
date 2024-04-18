@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:multilogin2/utils/next_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInProvider extends ChangeNotifier {
@@ -151,6 +152,32 @@ class SignInProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> signInWithEmail({required String email, required String password}) async {
+    try {
+      // Sign in the user with email and password
+      UserCredential userCredential = await firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Get the user details
+      User userDetails = userCredential.user!;
+
+      // Now save all values
+      _name = userDetails.displayName;
+      _email = userDetails.email;
+      _imageUrl = userDetails.photoURL;
+      _provider = "EMAIL";
+      _uid = userDetails.uid;
+      notifyListeners();
+    } catch (e) {
+      print('Error signing in with email: $e');
+      // You can handle the error here or display an error message to the user
+    }
+  }
+
+
 
   // ENTRY FOR CLOUDFIRESTORE
   Future getUserDataFromFirestore(uid) async {
