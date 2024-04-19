@@ -20,13 +20,10 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
-  late SignInProvider _signInProvider;
 
   @override
   void initState() {
     super.initState();
-    // Initialize SignInProvider instance
-    _signInProvider = SignInProvider();
   }
 
   @override
@@ -191,14 +188,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                                   ),
                                   SizedBox(height: 30),
                                   ElevatedButton(
-                                    onPressed: () {
-                                      createAccountWithEmail(
-                                        context: context,
-                                        name: _nameController.text.trim(),
-                                        email: _emailController.text.trim(),
-                                        password: _passwordController.text,
-                                      );
-                                    },
+                                    onPressed: () {},
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.black,
                                       shape: RoundedRectangleBorder(
@@ -241,51 +231,4 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
         ),
     );
   }
-
-  Future<void> createAccountWithEmail({
-    required BuildContext context,
-    required String name,
-    required String email,
-    required String password,
-  }) async {
-    final SignInProvider signInProvider = context.read<SignInProvider>();
-    final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-
-    try {
-      // Create the user account with email and password
-      UserCredential userCredential = await firebaseAuth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      // Get the user ID of the newly created user
-      String userId = userCredential.user!.uid;
-
-      // Store additional user data in Firestore
-      await FirebaseFirestore.instance.collection('users').doc(userId).set({
-        'name': name,
-        'email': email,
-        'provider': 'EMAIL',
-        'uid': userId,
-        'image_url': "https://winaero.com/blog/wp-content/uploads/2017/12/User-icon-256-blue.png"
-      });
-
-      // Sign in the user
-      await signInProvider.signInWithEmail(email: email, password: password);
-      // Navigate to the home screen
-      handleAfterSignIn();
-
-    } catch (e) {
-      print('Error creating account: $e');
-      // You can handle the error here or display an error message to the user
-    }
-  }
-
-  handleAfterSignIn() {
-    Future.delayed(const Duration(milliseconds: 1000)).then((value) {
-      nextScreenReplace(context, const HomeScreen());
-    });
-
-  }
-
 }

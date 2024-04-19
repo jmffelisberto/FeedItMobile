@@ -153,30 +153,6 @@ class SignInProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> signInWithEmail({required String email, required String password}) async {
-    try {
-      // Sign in the user with email and password
-      UserCredential userCredential = await firebaseAuth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      // Get the user details
-      User userDetails = userCredential.user!;
-
-      // Now save all values
-      _name = userDetails.displayName;
-      _email = userDetails.email;
-      _imageUrl = userDetails.photoURL;
-      _provider = "EMAIL";
-      _uid = userDetails.uid;
-      notifyListeners();
-    } catch (e) {
-      print('Error signing in with email: $e');
-      // You can handle the error here or display an error message to the user
-    }
-  }
-
 
 
   // ENTRY FOR CLOUDFIRESTORE
@@ -225,6 +201,7 @@ class SignInProvider extends ChangeNotifier {
     _imageUrl = s.getString('image_url');
     _uid = s.getString('uid');
     _provider = s.getString('provider');
+    print(_name);
     notifyListeners();
   }
 
