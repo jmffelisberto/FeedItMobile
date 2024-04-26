@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black12, // Change the color here
+                      backgroundColor: Colors.black12,
                     ),
                     onPressed: () {
                       sp.userSignOut();
@@ -109,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.amberAccent, // Change the color here
+                      backgroundColor: Colors.amberAccent,
                     ),
                     onPressed: () {
                       nextScreenReplace(context, SubmitIssueScreen());
@@ -123,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black, // Change the color here
+                      backgroundColor: Colors.black,
                     ),
                     onPressed: () { //change here
                       nextScreenReplace(context, LocalIssuesScreen());

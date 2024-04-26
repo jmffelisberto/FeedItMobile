@@ -199,15 +199,13 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                                 SizedBox(height: 30),
                                 ElevatedButton(
                                   onPressed: () async {
-                                    // Verificar se as senhas correspondem
                                     if (_passwordController.text !=
                                         _confirmPasswordController.text) {
-                                      // As senhas não correspondem, mostrar erro
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         SnackBar(
                                           content: Text(
-                                              'As senhas não correspondem'),
+                                              'Passwords do not match!'),
                                           backgroundColor: Colors.red,
                                         ),
                                       );
@@ -224,13 +222,12 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                                       sp.saveDataToSharedPreferences();
                                       nextScreenReplace(context, const HomeScreen());
                                     } catch (e) {
-                                      // Handle Firebase authentication errors
                                       if (e.toString() == 'weak-password') {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
                                           SnackBar(
                                             content: Text(
-                                                'A senha fornecida é muito fraca'),
+                                                'Provided password is too weak'),
                                             backgroundColor: Colors.red,
                                           ),
                                         );
@@ -240,7 +237,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                                             .showSnackBar(
                                           SnackBar(
                                             content: Text(
-                                                'A conta já existe para esse e-mail'),
+                                                'Provided e-mail already in use'),
                                             backgroundColor: Colors.red,
                                           ),
                                         );
@@ -249,7 +246,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                                             .showSnackBar(
                                           SnackBar(
                                             content: Text(
-                                                'Ocorreu um erro. Por favor, tente novamente mais tarde.'),
+                                                'An error occurred. Please try again later.'),
                                             backgroundColor: Colors.red,
                                           ),
                                         );
@@ -274,7 +271,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                                         ),
                                         SizedBox(width: 10),
                                         Text(
-                                          "Criar Conta",
+                                          "Create Account",
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 15,

@@ -36,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final sp = context.watch<SignInProvider>();
+    SignInProvider sp = context.watch<SignInProvider>();
     return WillPopScope(
         onWillPop: () async => false,
         child: Scaffold(
@@ -132,10 +132,21 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                     suffixIcon: IconButton(
                                       onPressed: () async {
-                                        handleEmailSignIn();
-                                        await sp.saveDataToFirestore();
-                                        sp.saveDataToSharedPreferences();
-                                        handleAfterSignIn();
+                                        User? loggdIn = await handleEmailSignIn();
+                                        if (loggdIn != null){
+                                          await sp.getUserDataFromFirestore(loggdIn?.uid);
+                                          sp.getDataFromSharedPreferences();
+                                          handleAfterSignIn();
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                  'Something\'s wrong. Review your credentials or create a new account.'),
+                                              backgroundColor: Colors.red,
+                                            ),
+                                          );
+                                        }
                                       },
                                       icon: Icon(
                                         Icons.arrow_forward_outlined,
@@ -374,18 +385,36 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  handleEmailSignIn() async {
+  Future<User?> handleEmailSignIn() async {
     try {
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim()
       );
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
+
+      return credential.user;
+
+    } catch (e) {
+      if (e.toString() == 'user-not-found') {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(
+          SnackBar(
+            content: Text(
+                'No user found for that email.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else if (e.toString() == 'wrong-password') {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(
+          SnackBar(
+            content: Text(
+                'Wrong password provided for that user.'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
+      return null;
     }
   }
 
