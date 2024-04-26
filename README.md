@@ -6,6 +6,7 @@ Another trial for skill development purposes.
 
 ### Authentication Methods
 
+- E-mail & Password Login
 - Google Account Login
 - Facebook Account Login
 - Phone Number w/ SMS confirmation
