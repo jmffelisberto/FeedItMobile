@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart'; // Import connectivity package
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:multilogin2/main.dart';
 import 'package:multilogin2/provider/issue_service_provider.dart';
@@ -117,6 +118,7 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> with TickerProvid
           subject: data['subject'],
           description: data['description'],
           createdAt: createdAt,
+          uid: data['uid']
         );
       }).toList();
 
@@ -132,6 +134,9 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> with TickerProvid
 
   @override
   Widget build(BuildContext context) {
+    var itsCloudIssues = _cloudIssues
+        .where((issue) => issue.uid == FirebaseAuth.instance.currentUser?.uid)
+        .toList();
     return WillPopScope(
       onWillPop: () async {
         // Handle the back button press here
@@ -194,12 +199,15 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> with TickerProvid
                 },
               ),
               // Cloud Issues Tab
-              _cloudIssues.isEmpty
+              itsCloudIssues.isEmpty
                   ? Center(child: Text('No cloud issues found'))
                   : ListView.builder(
-                itemCount: _cloudIssues.length,
+                itemCount: itsCloudIssues
+                    .length,
                 itemBuilder: (context, index) {
-                  final issue = _cloudIssues[index];
+                  final issue = _cloudIssues
+                      .where((issue) => issue.uid == FirebaseAuth.instance.currentUser?.uid)
+                      .toList()[index];
                   return ListTile(
                     title: Text(issue.subject),
                     subtitle: Text(issue.description),

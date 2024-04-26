@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:multilogin2/screens/home_screen.dart';
@@ -41,7 +42,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
 
 
     if (subject.isNotEmpty && description.isNotEmpty) {
-      Issue issue = Issue(subject: subject, description: description, createdAt: Timestamp.now());
+      Issue issue = Issue(subject: subject, description: description, createdAt: Timestamp.now(), uid: FirebaseAuth.instance.currentUser!.uid);
       var connectivityResult = await Connectivity().checkConnectivity();
       if (connectivityResult == ConnectivityResult.none) {
         // Device is offline, store data locally

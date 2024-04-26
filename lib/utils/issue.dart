@@ -8,17 +8,20 @@ class Issue {
   final String subject;
   final String description;
   final Timestamp? createdAt;
+  final String uid;
 
   Issue({
     required this.subject,
     required this.description,
     this.createdAt,
+    required this.uid,
   });
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {
       'subject': subject,
       'description': description,
+      'uid': uid, // Add UID field
     };
     if (createdAt != null) {
       json['createdAt'] = createdAt;
@@ -26,11 +29,13 @@ class Issue {
     return json;
   }
 
+
   factory Issue.fromJson(Map<String, dynamic> json) {
     return Issue(
       subject: json['subject'],
       description: json['description'],
       createdAt: json['createdAt'] != null ? Timestamp.fromMillisecondsSinceEpoch(json['createdAt']) : null,
+      uid: json['uid'], // Add uid field
     );
   }
 
