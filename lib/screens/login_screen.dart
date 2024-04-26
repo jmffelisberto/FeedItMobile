@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:multilogin2/provider/internet_provider.dart';
@@ -32,8 +33,10 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+
   @override
   Widget build(BuildContext context) {
+    final sp = context.watch<SignInProvider>();
     return WillPopScope(
         onWillPop: () async => false,
         child: Scaffold(
@@ -128,8 +131,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                       borderSide: BorderSide(color: Colors.transparent),
                                     ),
                                     suffixIcon: IconButton(
-                                      onPressed: () {
-                                        signInWithEmailPassword(context);
+                                      onPressed: () async {
+                                        handleEmailSignIn();
+                                        await sp.saveDataToFirestore();
+                                        sp.saveDataToSharedPreferences();
+                                        handleAfterSignIn();
                                       },
                                       icon: Icon(
                                         Icons.arrow_forward_outlined,
@@ -368,28 +374,18 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> signInWithEmailPassword(BuildContext context) async {
-    final signInProvider = context.read<SignInProvider>();
-    final internetProvider = context.read<InternetProvider>();
-
-    final String email = _emailController.text.trim();
-    final String password = _passwordController.text.trim();
-
-    await internetProvider.checkInternetConnection();
-
-    if (!internetProvider.hasInternet) {
-      openSnackbar(context, "Check your Internet connection", Colors.red);
-      return;
-    }
-
+  handleEmailSignIn() async {
     try {
-      await signInProvider.signInWithEmail(email: email, password: password);
-      // If sign-in is successful, handle next steps
-      handleAfterSignIn();
-    } catch (error) {
-      // If sign-in fails, handle the error
-      print("Sign-in error: $error");
-      openSnackbar(context, "Sign-in failed. Please try again.", Colors.red);
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim()
+      );
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+      }
     }
   }
 

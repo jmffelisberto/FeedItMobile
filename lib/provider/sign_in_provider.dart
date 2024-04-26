@@ -201,7 +201,7 @@ class SignInProvider extends ChangeNotifier {
     _imageUrl = s.getString('image_url');
     _uid = s.getString('uid');
     _provider = s.getString('provider');
-    print(_name);
+    //print(_name);
     notifyListeners();
   }
 
@@ -244,4 +244,34 @@ class SignInProvider extends ChangeNotifier {
     _provider = "PHONE";
     notifyListeners();
   }
+
+  Future<void> emailAndPassword({required String email, required String password, required String name}) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Set user data
+      _uid = userCredential.user!.uid;
+      _email = email;
+      _name = name;
+      _imageUrl = 'https://winaero.com/blog/wp-content/uploads/2017/12/User-icon-256-blue.png';
+      _provider = 'EMAIL'; // Assuming email sign-in
+      _hasError = false;
+      _errorCode = null;
+
+      // Notify listeners
+      notifyListeners();
+    } catch (e) {
+      _hasError = true;
+      _errorCode = e.toString();
+
+      // Notify listeners
+      notifyListeners();
+    }
+  }
+
+
+
 }
