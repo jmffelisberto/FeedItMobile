@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:multilogin2/provider/internet_provider.dart';
 import 'package:multilogin2/screens/create_account_screen.dart';
 import 'package:multilogin2/screens/home_screen.dart';
@@ -71,13 +72,16 @@ class _LoginScreenState extends State<LoginScreen> {
                             fit: BoxFit.cover,
                           ),
                           const SizedBox(height: 20),
-                          const Text("Welcome to Trial",
-                              style: TextStyle(
-                                  fontSize: 25, fontWeight: FontWeight.w500)),
+                          Text("Welcome to Trial",
+                              style: GoogleFonts.exo2(
+                                fontSize: 24,
+                              fontWeight: FontWeight.bold
+                              ),),
                           const SizedBox(height: 5),
                           Text("Testing login & local to cloud storage",
-                              style: TextStyle(
-                                  fontSize: 10, color: Colors.black)),
+                            style: GoogleFonts.exo2(
+                                fontSize: 10,
+                            ),),
                         ],
                       ),
                       SizedBox(height: 50),

@@ -47,6 +47,7 @@ dependencies:
   rounded_loading_button_plus: ^3.0.1
   connectivity_plus: ^5.0.2
   connectivity: ^3.0.6
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:

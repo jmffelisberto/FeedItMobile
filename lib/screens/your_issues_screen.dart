@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart'; // Import connectivity package
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:multilogin2/main.dart';
 import 'package:multilogin2/provider/issue_service_provider.dart';
 import 'package:multilogin2/screens/home_screen.dart';
@@ -152,7 +153,10 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> with TickerProvid
         initialIndex: widget.initialTabIndex,
         child: Scaffold(
           appBar: AppBar(
-            title: Text('Issues'),
+            title: Text(
+              "Issues",
+              style: GoogleFonts.exo2(),
+            ),
             leading: IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {

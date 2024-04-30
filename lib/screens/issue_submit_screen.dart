@@ -3,6 +3,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:multilogin2/screens/home_screen.dart';
 import 'package:multilogin2/screens/your_issues_screen.dart';
 import 'package:multilogin2/utils/issue.dart';
@@ -114,7 +115,10 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
       },
       child:  Scaffold(
         appBar: AppBar(
-          title: Text('Submit Issue'),
+          title: Text(
+            "Submit Issue",
+            style: GoogleFonts.exo2(),
+          ),
         ),
         body: Padding(
           padding: EdgeInsets.all(16.0),
