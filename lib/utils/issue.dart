@@ -5,40 +5,48 @@ import 'package:connectivity/connectivity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Issue {
-  final String subject;
+  final String title;
   final String description;
+  final String tag;
+  final String? image; // Add image field
   final Timestamp? createdAt;
   final String uid;
 
   Issue({
-    required this.subject,
+    required this.title,
     required this.description,
+    required this.tag,
+    this.image, // Add image parameter
     this.createdAt,
     required this.uid,
   });
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {
-      'subject': subject,
+      'title': title,
       'description': description,
-      'uid': uid, // Add UID field
+      'tag': tag,
+      'uid': uid,
     };
+    if (image != null) {
+      json['image'] = image; // Add image field
+    }
     if (createdAt != null) {
       json['createdAt'] = createdAt;
     }
     return json;
   }
 
-
   factory Issue.fromJson(Map<String, dynamic> json) {
     return Issue(
-      subject: json['subject'],
+      title: json['title'],
       description: json['description'],
+      tag: json['tag'],
+      image: json['image'], // Add image field
       createdAt: json['createdAt'] != null ? Timestamp.fromMillisecondsSinceEpoch(json['createdAt']) : null,
-      uid: json['uid'], // Add uid field
+      uid: json['uid'],
     );
   }
-
 
   static Future<void> submitLocalIssues() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

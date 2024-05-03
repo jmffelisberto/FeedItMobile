@@ -114,12 +114,13 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> with TickerProvid
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('issues').orderBy('createdAt', descending: true).get();
       List<Issue> cloudIssues = querySnapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        Timestamp createdAt = data['createdAt'];
+        print('Data from Firestore: $data'); // Print the data retrieved from Firestore
         return Issue(
-          subject: data['subject'],
-          description: data['description'],
-          createdAt: createdAt,
-          uid: data['uid']
+            title: data['title'] ?? '', // Use default value if 'title' is null
+            description: data['description'] ?? '', // Use default value if 'description' is null
+            tag: data['tag'] ?? '', // Use default value if 'tag' is null
+            createdAt: data['createdAt'],
+            uid: data['uid'] ?? ''
         );
       }).toList();
 
@@ -132,6 +133,8 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> with TickerProvid
       print('Error fetching cloud issues: $e');
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -197,8 +200,15 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> with TickerProvid
                 itemBuilder: (context, index) {
                   final issue = _localIssues[index];
                   return ListTile(
-                    title: Text(issue.subject),
-                    subtitle: Text(issue.description),
+                    title: Text(issue.title),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Description: ${issue.description}'),
+                        Text('Tag: ${issue.tag}'),
+                        Text('Created At: ${issue.createdAt?.toDate()}'),
+                      ],
+                    ),
                   );
                 },
               ),
@@ -206,15 +216,19 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> with TickerProvid
               itsCloudIssues.isEmpty
                   ? Center(child: Text('No cloud issues found'))
                   : ListView.builder(
-                itemCount: itsCloudIssues
-                    .length,
+                itemCount: itsCloudIssues.length,
                 itemBuilder: (context, index) {
-                  final issue = _cloudIssues
-                      .where((issue) => issue.uid == FirebaseAuth.instance.currentUser?.uid)
-                      .toList()[index];
+                  final issue = itsCloudIssues[index];
                   return ListTile(
-                    title: Text(issue.subject),
-                    subtitle: Text(issue.description),
+                    title: Text(issue.title),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Description: ${issue.description}'),
+                        Text('Tag: ${issue.tag}'),
+                        Text('Created At: ${issue.createdAt?.toDate()}'),
+                      ],
+                    ),
                   );
                 },
               ),

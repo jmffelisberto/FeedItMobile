@@ -11,6 +11,9 @@ import 'package:multilogin2/utils/next_screen.dart';
 import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:multilogin2/utils/issue.dart';
+import 'package:multilogin2/utils/next_screen.dart';
 
 class SubmitIssueScreen extends StatefulWidget {
   @override
@@ -18,32 +21,56 @@ class SubmitIssueScreen extends StatefulWidget {
 }
 
 class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
-  late TextEditingController _subjectController;
+  late TextEditingController _titleController;
   late TextEditingController _descriptionController;
+  late TextEditingController _tagController;
+  late String _selectedTag;
+  final List<String> _tagOptions = ['Work', 'Leisure', 'Other'];
+  late TextEditingController _imageController;
   final RoundedLoadingButtonController submitController = RoundedLoadingButtonController();
-
 
   @override
   void initState() {
     super.initState();
-    _subjectController = TextEditingController();
+    _titleController = TextEditingController();
     _descriptionController = TextEditingController();
+    _tagController = TextEditingController();
+    _imageController = TextEditingController();
+    _selectedTag = _tagOptions.first;
   }
 
   @override
   void dispose() {
-    _subjectController.dispose();
+    _titleController.dispose();
     _descriptionController.dispose();
+    _tagController.dispose();
+    _imageController.dispose();
     super.dispose();
   }
 
   void _submitIssue() async {
-    String subject = _subjectController.text.trim();
+    String title = _titleController.text.trim();
     String description = _descriptionController.text.trim();
+    String tag = _selectedTag.trim();
+
+    print(title);
+    print("\n");
+    print(description);
+    print("\n");
+    print(title);
+    print("\n");
+    print(tag);
 
 
-    if (subject.isNotEmpty && description.isNotEmpty) {
-      Issue issue = Issue(subject: subject, description: description, createdAt: Timestamp.now(), uid: FirebaseAuth.instance.currentUser!.uid);
+    if (title.isNotEmpty && description.isNotEmpty && tag.isNotEmpty) {
+      Issue issue = Issue(
+        title: title,
+        description: description,
+        createdAt: Timestamp.now(),
+        uid: FirebaseAuth.instance.currentUser!.uid,
+        tag: tag,
+      );
+
       var connectivityResult = await Connectivity().checkConnectivity();
       if (connectivityResult == ConnectivityResult.none) {
         // Device is offline, store data locally
@@ -63,9 +90,16 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
   }
 
 
+
   Future<void> submitIssueToFirestore(Issue issue) async {
     try {
-      await FirebaseFirestore.instance.collection('issues').add(issue.toJson());
+      await FirebaseFirestore.instance.collection('issues').add({
+        'title': issue.title,
+        'description': issue.description,
+        'tag': issue.tag, // Add the tag field
+        'createdAt': issue.createdAt,
+        'uid': issue.uid,
+      });
       print('Issue submitted successfully');
       await Future.delayed(Duration(milliseconds: 500));
       nextScreenReplace(context, LocalIssuesScreen(initialTabIndex: 1));
@@ -75,7 +109,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
         context: context,
         builder: (context) => AlertDialog(
           title: Text('Could not submit issue!'),
-          content: Text('An unexpected error occured. Sorry, again later!'),
+          content: Text('An unexpected error occured. Please try again later!'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -86,6 +120,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
       );
     }
   }
+
 
   Future<void> _storeLocally(Issue issue) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -101,19 +136,20 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     await prefs.setStringList('local_issues', localIssues);
   }
 
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // Handle the back button press here
-        // Navigate back to the previous page
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
-        );
-        return false; // Prevent the default back button behavior
-      },
-      child:  Scaffold(
+      // Handle the back button press here
+      // Navigate back to the previous page
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
+      return false; // Prevent the default back button behavior
+    },
+      child: Scaffold(
         appBar: AppBar(
           title: Text(
             "Submit Issue",
@@ -126,7 +162,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
-                controller: _subjectController,
+                controller: _titleController,
                 decoration: InputDecoration(labelText: 'Subject'),
               ),
               SizedBox(height: 20),
@@ -136,43 +172,58 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
                 maxLines: 5,
               ),
               SizedBox(height: 20),
-              RoundedLoadingButton(
-                  controller: submitController,
-                  successColor: Colors.green,
-                  errorColor: Colors.red,
-                  onPressed: () async {
-                    submitController.start();
-                    await Future.delayed(Duration(milliseconds: 500));
-                    _submitIssue();
-                  },
-                  width: MediaQuery.of(context).size.width * 0.30,
-                  elevation: 0,
-                  borderRadius: 25,
-                  color: Colors.grey,
-                  child: Wrap(
-                    children: const [
-                      Icon(
-                        FontAwesomeIcons.boxOpen,
-                        size: 20,
-                        color: Colors.black,
-                      ),
-                      SizedBox(
-                        width: 15,
-                      ),
-                      Text("Submit",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500)
-                      ),
-                    ],
-                  )
+              DropdownButtonFormField<String>(
+                value: _selectedTag,
+                onChanged: (value) {
+                  setState(() {
+                    _selectedTag = value!;
+                  });
+                },
+                items: _tagOptions.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                decoration: InputDecoration(labelText: 'Tag'),
               ),
-
+              SizedBox(height: 20),
+              RoundedLoadingButton(
+                controller: submitController,
+                successColor: Colors.green,
+                errorColor: Colors.red,
+                onPressed: () async {
+                  submitController.start();
+                  await Future.delayed(Duration(milliseconds: 500));
+                  _submitIssue();
+                },
+                width: MediaQuery.of(context).size.width * 0.30,
+                elevation: 0,
+                borderRadius: 25,
+                color: Colors.grey,
+                child: Wrap(
+                  children: const [
+                    Icon(
+                      FontAwesomeIcons.boxOpen,
+                      size: 20,
+                      color: Colors.black,
+                    ),
+                    SizedBox(width: 15),
+                    Text(
+                      "Submit",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
-      )
+      ),
     );
   }
 }
