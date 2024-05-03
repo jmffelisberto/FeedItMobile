@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:multilogin2/provider/issue_service_provider.dart';
 import 'package:multilogin2/screens/issue_detail_screen.dart';
 import 'package:multilogin2/utils/issue.dart';
@@ -108,11 +109,6 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
     }
   }
 
-
-
-
-
-
   void _fetchCloudIssues() async {
     // Set _isSubmittingLocalIssues to true to trigger the rotating icon
     setState(() {});
@@ -138,7 +134,10 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("All Issues"),
+        title: Text(
+          "All Issues",
+          style: GoogleFonts.exo2(),
+        ),
       ),
       body: _cloudIssues.isEmpty
           ? Center(child: Text('No cloud issues found'))
@@ -187,6 +186,8 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
                       title: FutureBuilder<String?>(
                         future: fetchAuthorName(issue.uid),
                         builder: (context, snapshot) {
+                          //print(issue.uid);
+                          //print(snapshot.data.toString());
                           if (snapshot.hasData) {
                             return Text(snapshot.data!);
                           } else {
