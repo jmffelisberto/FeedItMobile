@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:multilogin2/provider/issue_service_provider.dart';
@@ -67,6 +68,51 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
     }
   }
 
+// Function to fetch the author's profile picture URL
+  Future<String?> fetchAuthorProfilePicture(String uid) async {
+    try {
+      // Access the "users" collection in Firestore and fetch the document with the given UID
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      Map<String, dynamic>? userData = userSnapshot.data() as Map<String, dynamic>?; // Cast to Map<String, dynamic>
+      // Check if the document exists and contains a "name" field
+      if (userSnapshot.exists && userSnapshot.data() != null && userData?['image_url'] != null) {
+        // Return the author's name if available
+        return userData?['image_url'];
+      }
+      // Return null if the document doesn't exist or doesn't contain a name field
+      return null;
+    } catch (e) {
+      // Handle any errors that occur during the fetch operation
+      print('Error fetching author photo: $e');
+      return null;
+    }
+  }
+
+// Function to fetch the author's name
+  Future<String?> fetchAuthorName(String uid) async {
+    try {
+      // Access the "users" collection in Firestore and fetch the document with the given UID
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      Map<String, dynamic>? userData = userSnapshot.data() as Map<String, dynamic>?; // Cast to Map<String, dynamic>
+      // Check if the document exists and contains a "name" field
+      if (userSnapshot.exists && userSnapshot.data() != null && userData?['name'] != null) {
+        // Return the author's name if available
+        return userData?['name'];
+      }
+      // Return null if the document doesn't exist or doesn't contain a name field
+      return null;
+    } catch (e) {
+      // Handle any errors that occur during the fetch operation
+      print('Error fetching author name: $e');
+      return null;
+    }
+  }
+
+
+
+
+
+
   void _fetchCloudIssues() async {
     // Set _isSubmittingLocalIssues to true to trigger the rotating icon
     setState(() {});
@@ -118,24 +164,47 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(issue.title),
-                        Row(
-                          children: [
-                            Align(
-                              alignment: Alignment.center,
-                              child: _buildTagContainer(issue.tag),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          getTimeElapsed(issue.createdAt),
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Icon(FontAwesomeIcons.angleRight),
-                      ],
+                    Text(
+                      issue.title,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    ListTile(
+                      leading: FutureBuilder<String?>(
+                        future: fetchAuthorProfilePicture(issue.uid),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return CircleAvatar(
+                              backgroundImage: NetworkImage(snapshot.data!),
+                            );
+                          } else {
+                            return CircleAvatar(); // Placeholder avatar or loading indicator
+                          }
+                        },
+                      ),
+                      title: FutureBuilder<String?>(
+                        future: fetchAuthorName(issue.uid),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return Text(snapshot.data!);
+                          } else {
+                            return Text('Loading...'); // Placeholder text or loading indicator
+                          }
+                        },
+                      ),
+                      subtitle: Row(
+                        children: [
+                          _buildTagContainer(issue.tag),
+                          SizedBox(width: 8),
+                          Text(
+                            getTimeElapsed(issue.createdAt),
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      trailing: Icon(FontAwesomeIcons.angleRight),
                     ),
                   ],
                 ),
@@ -146,6 +215,8 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
       ),
     );
   }
+
+
 
 
   // Function to build tag container with specific color based on tag
