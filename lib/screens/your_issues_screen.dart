@@ -3,11 +3,14 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart'; // Import connectivity package
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:multilogin2/main.dart';
 import 'package:multilogin2/provider/issue_service_provider.dart';
 import 'package:multilogin2/screens/home_screen.dart';
+import 'package:multilogin2/screens/issue_detail_screen.dart';
 import 'package:multilogin2/utils/issue.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -134,6 +137,55 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> with TickerProvid
     }
   }
 
+  Widget _buildTagContainer(String tag) {
+    Color color;
+    switch (tag) {
+      case 'Work':
+        color = Colors.orange;
+        break;
+      case 'Leisure':
+        color = Colors.yellow;
+        break;
+    // Add more cases for other tags as needed
+      default:
+        color = Colors.grey; // Default color
+    }
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        tag,
+        style: TextStyle(color: Colors.white),
+      ),
+    );
+  }
+
+  String getTimeElapsed(Timestamp? createdAt) {
+    if (createdAt == null) return ''; // Handle null createdAt
+
+    final now = DateTime.now();
+    final createdAtDateTime = createdAt.toDate();
+    final difference = now.difference(createdAtDateTime);
+
+    if (difference.inSeconds < 60) {
+      return 'just now';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} min${difference.inMinutes == 1 ? '' : 's'}. ago';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours} hour${difference.inHours == 1 ? '' : 's'} ago';
+    } else if (difference.inDays == 1) {
+      return 'yesterday';
+    } else {
+      return '${difference.inDays} day${difference.inDays == 1 ? '' : 's'} ago';
+    }
+  }
+
+
+
 
 
   @override
@@ -199,15 +251,46 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> with TickerProvid
                 itemCount: _localIssues.length,
                 itemBuilder: (context, index) {
                   final issue = _localIssues[index];
-                  return ListTile(
-                    title: Text(issue.title),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Description: ${issue.description}'),
-                        Text('Tag: ${issue.tag}'),
-                        Text('Created At: ${issue.createdAt?.toDate()}'),
-                      ],
+                  return GestureDetector(
+                    onTap: () {
+                      // Navigate to the issue detail page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => IssueDetailPage(issue: issue),
+                        ),
+                      );
+                    },
+                    child: Card(
+                      elevation: 3,
+                      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      child: Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(issue.title),
+                                Row(
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: _buildTagContainer(issue.tag),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  getTimeElapsed(issue.createdAt),
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                Icon(FontAwesomeIcons.angleRight),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   );
                 },
@@ -219,15 +302,46 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> with TickerProvid
                 itemCount: itsCloudIssues.length,
                 itemBuilder: (context, index) {
                   final issue = itsCloudIssues[index];
-                  return ListTile(
-                    title: Text(issue.title),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Description: ${issue.description}'),
-                        Text('Tag: ${issue.tag}'),
-                        Text('Created At: ${issue.createdAt?.toDate()}'),
-                      ],
+                  return GestureDetector(
+                    onTap: () {
+                      // Navigate to the issue detail page when tapped
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => IssueDetailPage(issue: issue),
+                        ),
+                      );
+                    },
+                    child: Card(
+                      elevation: 3,
+                      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      child: Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(issue.title),
+                                Row(
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: _buildTagContainer(issue.tag),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  getTimeElapsed(issue.createdAt),
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                Icon(FontAwesomeIcons.angleRight),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   );
                 },
