@@ -9,6 +9,7 @@ import 'package:multilogin2/screens/login_screen.dart';
 import 'package:multilogin2/utils/next_screen.dart';
 
 import '../utils/config.dart';
+import 'all_issues_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -139,7 +140,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          // Your logic here
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => AllIssuesPage()),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue, // Background color
