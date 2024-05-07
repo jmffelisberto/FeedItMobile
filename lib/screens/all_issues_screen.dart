@@ -15,6 +15,9 @@ class AllIssuesPage extends StatefulWidget {
 class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateMixin {
   List<Issue> _cloudIssues = [];
   List<Issue> _localIssues = [];
+  List<Issue> _filteredIssues = [];
+  List<String> _tags = [];
+  String _selectedTag = 'All'; // Default value for filtering
   late ConnectivityService _connectivityService;
   late AnimationController _animationController;
   bool _isSubmittingLocalIssues = false;
@@ -25,8 +28,6 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
   void initState() {
     super.initState();
     _loadCloudIssues();
-
-    // Initialize the connectivity service
     _connectivityService = ConnectivityService(onConnectionRestored: () {
       if (_localIssues.isNotEmpty) {
         _fetchCloudIssues();
@@ -35,38 +36,48 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
         _hasConnection = true;
       });
     });
-
-
-    // Initialize the animation controller for the rotating icon
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 2), // Adjust the duration as needed
-    )..repeat(); // Repeat the animation indefinitely
+      duration: Duration(seconds: 2),
+    )..repeat();
   }
 
   Future<void> _loadCloudIssues() async {
     try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('issues').orderBy('createdAt', descending: true).get();
-      List<Issue> cloudIssues = querySnapshot.docs.map((doc) {
+      QuerySnapshot querySnapshot =
+      await FirebaseFirestore.instance.collection('issues').orderBy('createdAt', descending: true).get();
+      _cloudIssues = querySnapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        print('Data from Firestore: $data'); // Print the data retrieved from Firestore
         return Issue(
-            title: data['title'] ?? '', // Use default value if 'title' is null
-            description: data['description'] ?? '', // Use default value if 'description' is null
-            tag: data['tag'] ?? '', // Use default value if 'tag' is null
-            createdAt: data['createdAt'],
-            uid: data['uid'] ?? ''
+          title: data['title'] ?? '',
+          description: data['description'] ?? '',
+          tag: data['tag'] ?? '',
+          createdAt: data['createdAt'],
+          uid: data['uid'] ?? '',
         );
       }).toList();
-
-      setState(() {
-        _cloudIssues = cloudIssues;
-      });
-
+      _filteredIssues = List.from(_cloudIssues); // Initialize filtered issues with all issues
+      _extractTags(); // Extract unique tags from issues
       print('Cloud issues fetched successfully');
     } catch (e) {
       print('Error fetching cloud issues: $e');
     }
+  }
+
+  void _extractTags() {
+    Set<String> uniqueTags = Set.from(_cloudIssues.map((issue) => issue.tag));
+    _tags = ['All', ...uniqueTags.toList()]; // Add 'All' option to the beginning
+  }
+
+  void _filterIssuesByTag(String tag) {
+    setState(() {
+      _selectedTag = tag;
+      if (tag == 'All') {
+        _filteredIssues = List.from(_cloudIssues);
+      } else {
+        _filteredIssues = _cloudIssues.where((issue) => issue.tag == tag).toList();
+      }
+    });
   }
 
 // Function to fetch the author's profile picture URL
@@ -134,20 +145,36 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "All Issues",
-          style: GoogleFonts.exo2(),
-        ),
+        title: Text("All Issues",
+          style: GoogleFonts.exo2()),
+        actions: [
+          DropdownButton<String>(
+            value: _selectedTag,
+            onChanged: (String? newValue) {
+              if (newValue != null) {
+                setState(() {
+                  _selectedTag = newValue;
+                });
+                _filterIssuesByTag(newValue);
+              }
+            },
+            items: _tags.map<DropdownMenuItem<String>>((String tag) {
+              return DropdownMenuItem<String>(
+                value: tag,
+                child: Text(tag),
+              );
+            }).toList(),
+          ),
+        ],
       ),
-      body: _cloudIssues.isEmpty
-          ? Center(child: Text('No cloud issues found'))
+      body: _filteredIssues.isEmpty
+          ? Center(child: Text('No issues found'))
           : ListView.builder(
-        itemCount: _cloudIssues.length,
+        itemCount: _filteredIssues.length,
         itemBuilder: (context, index) {
-          final issue = _cloudIssues[index];
+          final issue = _filteredIssues[index];
           return GestureDetector(
             onTap: () {
-              // Navigate to the issue detail page
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -186,8 +213,6 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
                       title: FutureBuilder<String?>(
                         future: fetchAuthorName(issue.uid),
                         builder: (context, snapshot) {
-                          //print(issue.uid);
-                          //print(snapshot.data.toString());
                           if (snapshot.hasData) {
                             return Text(snapshot.data!);
                           } else {
@@ -269,4 +294,5 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
       return '${difference.inDays} day${difference.inDays == 1 ? '' : 's'} ago';
     }
   }
+
 }
