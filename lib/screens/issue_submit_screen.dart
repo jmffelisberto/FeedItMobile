@@ -1,19 +1,16 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:multilogin2/screens/home_screen.dart';
 import 'package:multilogin2/screens/your_issues_screen.dart';
 import 'package:multilogin2/utils/issue.dart';
 import 'package:multilogin2/utils/next_screen.dart';
 import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:multilogin2/utils/issue.dart';
-import 'package:multilogin2/utils/next_screen.dart';
 
 class SubmitIssueScreen extends StatefulWidget {
   @override
@@ -26,8 +23,8 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
   late TextEditingController _tagController;
   late String _selectedTag;
   final List<String> _tagOptions = ['Work', 'Leisure', 'Other'];
-  late TextEditingController _imageController;
-  final RoundedLoadingButtonController submitController = RoundedLoadingButtonController();
+  final RoundedLoadingButtonController submitController =
+  RoundedLoadingButtonController();
 
   @override
   void initState() {
@@ -35,7 +32,6 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     _titleController = TextEditingController();
     _descriptionController = TextEditingController();
     _tagController = TextEditingController();
-    _imageController = TextEditingController();
     _selectedTag = _tagOptions.first;
   }
 
@@ -44,7 +40,6 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     _titleController.dispose();
     _descriptionController.dispose();
     _tagController.dispose();
-    _imageController.dispose();
     super.dispose();
   }
 
@@ -53,35 +48,39 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     String description = _descriptionController.text.trim();
     String tag = _selectedTag.trim();
 
-    print(title);
-    print("\n");
-    print(description);
-    print("\n");
-    print(title);
-    print("\n");
-    print(tag);
-
-
     if (title.isNotEmpty && description.isNotEmpty && tag.isNotEmpty) {
-      Issue issue = Issue(
-        title: title,
-        description: description,
-        createdAt: Timestamp.now(),
-        uid: FirebaseAuth.instance.currentUser!.uid,
-        tag: tag,
-      );
+      // Fetch the current user
+      User? user = FirebaseAuth.instance.currentUser;
 
-      var connectivityResult = await Connectivity().checkConnectivity();
-      if (connectivityResult == ConnectivityResult.none) {
-        // Device is offline, store data locally
-        await _storeLocally(issue);
-        await Future.delayed(Duration(milliseconds: 500));
-        submitController.success();
-        nextScreenReplace(context, LocalIssuesScreen(initialTabIndex: 0));
+      if (user != null) {
+        // Fetch author details from Firestore using the UID
+
+        Issue issue = Issue(
+          title: title,
+          description: description,
+          createdAt: Timestamp.now(),
+          tag: tag,
+          authorName: user.displayName,
+          authorProfilePicture: user.photoURL,
+          uid: user.uid,
+        );
+
+        var connectivityResult = await Connectivity().checkConnectivity();
+        if (connectivityResult == ConnectivityResult.none) {
+          // Device is offline, store data locally
+          await _storeLocally(issue);
+          await Future.delayed(Duration(milliseconds: 500));
+          submitController.success();
+          nextScreenReplace(context, LocalIssuesScreen(initialTabIndex: 0));
+        } else {
+          // Device is online, submit data to Firestore
+          submitController.success();
+          await submitIssueToFirestore(issue);
+        }
       } else {
-        // Device is online, submit data to Firestore
-        submitController.success();
-        await submitIssueToFirestore(issue);
+        print('User not logged in');
+        await Future.delayed(Duration(milliseconds: 500));
+        submitController.error();
       }
     } else {
       await Future.delayed(Duration(milliseconds: 500));
@@ -90,16 +89,9 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
   }
 
 
-
   Future<void> submitIssueToFirestore(Issue issue) async {
     try {
-      await FirebaseFirestore.instance.collection('issues').add({
-        'title': issue.title,
-        'description': issue.description,
-        'tag': issue.tag, // Add the tag field
-        'createdAt': issue.createdAt,
-        'uid': issue.uid,
-      });
+      await FirebaseFirestore.instance.collection('issues').add(issue.toJson());
       print('Issue submitted successfully');
       await Future.delayed(Duration(milliseconds: 500));
       nextScreenReplace(context, LocalIssuesScreen(initialTabIndex: 1));
@@ -121,13 +113,11 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     }
   }
 
-
   Future<void> _storeLocally(Issue issue) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     // Serialize the issue object into a JSON string
-    Map<String, dynamic> jsonIssue = issue.toJson(); // Convert to JSON map
+    Map<String, dynamic> jsonIssue = issue.toJson();
     if (issue.createdAt != null) {
-      // Only store createdAt if it's not null
       jsonIssue['createdAt'] = issue.createdAt!.millisecondsSinceEpoch;
     }
     // Store the JSON string in shared preferences
@@ -136,24 +126,20 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     await prefs.setStringList('local_issues', localIssues);
   }
 
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-      // Handle the back button press here
-      // Navigate back to the previous page
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-      );
-      return false; // Prevent the default back button behavior
-    },
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+        return false;
+      },
       child: Scaffold(
         appBar: AppBar(
           title: Text(
             "Submit Issue",
-            style: GoogleFonts.exo2(),
           ),
         ),
         body: Padding(

@@ -53,6 +53,9 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
           description: data['description'] ?? '',
           tag: data['tag'] ?? '',
           createdAt: data['createdAt'],
+          authorName: data['authorName'] ?? '',
+          authorProfilePicture: data['authorProfilePicture'] ?? '',
+          image: data['image'] ?? '',
           uid: data['uid'] ?? '',
         );
       }).toList();
@@ -145,8 +148,10 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("All Issues",
-          style: GoogleFonts.exo2()),
+        title: Text(
+          "All Issues",
+          style: GoogleFonts.exo2(),
+        ),
         actions: [
           DropdownButton<String>(
             value: _selectedTag,
@@ -198,28 +203,10 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
                       ),
                     ),
                     ListTile(
-                      leading: FutureBuilder<String?>(
-                        future: fetchAuthorProfilePicture(issue.uid),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return CircleAvatar(
-                              backgroundImage: NetworkImage(snapshot.data!),
-                            );
-                          } else {
-                            return CircleAvatar(); // Placeholder avatar or loading indicator
-                          }
-                        },
+                      leading: CircleAvatar(
+                        backgroundImage: NetworkImage(issue.authorProfilePicture ?? ''),
                       ),
-                      title: FutureBuilder<String?>(
-                        future: fetchAuthorName(issue.uid),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return Text(snapshot.data!);
-                          } else {
-                            return Text('Loading...'); // Placeholder text or loading indicator
-                          }
-                        },
-                      ),
+                      title: Text(issue.authorName ?? ''),
                       subtitle: Row(
                         children: [
                           _buildTagContainer(issue.tag),

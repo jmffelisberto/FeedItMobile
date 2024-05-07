@@ -122,7 +122,6 @@ class SignInProvider extends ChangeNotifier {
         _name = profile['name'];
         _email = profile['email'];
         _imageUrl = profile!['picture']['data']['url'];
-        //print(_im)
         _uid = profile['id'];
         _hasError = false;
         _provider = "FACEBOOK";

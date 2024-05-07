@@ -8,17 +8,21 @@ class Issue {
   final String title;
   final String description;
   final String tag;
-  final String? image; // Add image field
+  final String? image;
   final Timestamp? createdAt;
+  final String? authorName; // Add author's name field
+  final String? authorProfilePicture; // Add author's profile picture field
   final String uid;
 
   Issue({
     required this.title,
     required this.description,
     required this.tag,
-    this.image, // Add image parameter
+    this.image,
     this.createdAt,
-    required this.uid,
+    this.authorName,
+    this.authorProfilePicture,
+    required this.uid
   });
 
   Map<String, dynamic> toJson() {
@@ -29,10 +33,16 @@ class Issue {
       'uid': uid,
     };
     if (image != null) {
-      json['image'] = image; // Add image field
+      json['image'] = image;
     }
     if (createdAt != null) {
       json['createdAt'] = createdAt;
+    }
+    if (authorName != null) {
+      json['authorName'] = authorName; // Add author's name field
+    }
+    if (authorProfilePicture != null) {
+      json['authorProfilePicture'] = authorProfilePicture; // Add author's profile picture field
     }
     return json;
   }
@@ -42,8 +52,10 @@ class Issue {
       title: json['title'],
       description: json['description'],
       tag: json['tag'],
-      image: json['image'], // Add image field
+      image: json['image'],
       createdAt: json['createdAt'] != null ? Timestamp.fromMillisecondsSinceEpoch(json['createdAt']) : null,
+      authorName: json['authorName'], // Add author's name field
+      authorProfilePicture: json['authorProfilePicture'], // Add author's profile picture field
       uid: json['uid'],
     );
   }

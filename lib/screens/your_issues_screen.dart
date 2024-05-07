@@ -23,7 +23,8 @@ class LocalIssuesScreen extends StatefulWidget {
   _LocalIssuesScreenState createState() => _LocalIssuesScreenState();
 }
 
-class _LocalIssuesScreenState extends State<LocalIssuesScreen> with TickerProviderStateMixin {
+class _LocalIssuesScreenState extends State<LocalIssuesScreen>
+    with TickerProviderStateMixin {
   List<Issue> _localIssues = [];
   List<Issue> _cloudIssues = [];
   late ConnectivityService _connectivityService;
@@ -51,14 +52,12 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> with TickerProvid
       });
     });
 
-
     // Initialize the animation controller for the rotating icon
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(seconds: 2), // Adjust the duration as needed
     )..repeat(); // Repeat the animation indefinitely
   }
-
 
   @override
   void dispose() {
@@ -76,10 +75,11 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> with TickerProvid
     List<String>? localIssuesJson = prefs.getStringList('local_issues');
     if (localIssuesJson != null) {
       setState(() {
-        _localIssues = localIssuesJson.map((json) => Issue.fromJson(jsonDecode(json))).toList();
+        _localIssues =
+            localIssuesJson.map((json) => Issue.fromJson(jsonDecode(json))).toList();
       });
-    }
-    else _localIssues = [];
+    } else
+      _localIssues = [];
   }
 
   void _fetchCloudIssues() async {
@@ -110,20 +110,24 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> with TickerProvid
     setState(() {});
   }
 
-
-
   Future<void> _loadCloudIssues() async {
     try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('issues').orderBy('createdAt', descending: true).get();
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('issues')
+          .orderBy('createdAt', descending: true)
+          .get();
       List<Issue> cloudIssues = querySnapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         print('Data from Firestore: $data'); // Print the data retrieved from Firestore
         return Issue(
-            title: data['title'] ?? '', // Use default value if 'title' is null
-            description: data['description'] ?? '', // Use default value if 'description' is null
-            tag: data['tag'] ?? '', // Use default value if 'tag' is null
-            createdAt: data['createdAt'],
-            uid: data['uid'] ?? ''
+          title: data['title'] ?? '', // Use default value if 'title' is null
+          description: data['description'] ?? '', // Use default value if 'description' is null
+          tag: data['tag'] ?? '', // Use default value if 'tag' is null
+          createdAt: data['createdAt'],
+          authorName: data['authorName'] ?? '', // Add author's name field
+          authorProfilePicture: data['authorProfilePicture'] ?? '', // Add author's profile picture field
+          image: data['image'] ?? '', // Add image field
+          uid: data['uid'] ?? '',
         );
       }).toList();
 
@@ -136,6 +140,7 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> with TickerProvid
       print('Error fetching cloud issues: $e');
     }
   }
+
 
   Widget _buildTagContainer(String tag) {
     Color color;
@@ -184,15 +189,12 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen> with TickerProvid
     }
   }
 
-
-
-
-
   @override
   Widget build(BuildContext context) {
     var itsCloudIssues = _cloudIssues
         .where((issue) => issue.uid == FirebaseAuth.instance.currentUser?.uid)
         .toList();
+
     return WillPopScope(
       onWillPop: () async {
         // Handle the back button press here
