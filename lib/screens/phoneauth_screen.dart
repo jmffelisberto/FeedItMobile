@@ -26,68 +26,80 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black,
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+        );
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black,
+            ),
+            onPressed: () {
+              // Navigate back to the previous screen
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => LoginScreen()),
+              );
+            },
           ),
-          onPressed: () {
-            nextScreenReplace(context, const LoginScreen());
-          },
         ),
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          child: Form(
-            key: formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Image(
-                    image: AssetImage(Config.app_icon), height: 50, width: 50),
-                const SizedBox(
-                  height: 10,
-                ),
-                const Text(
-                  "Phone Login",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                TextFormField(
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "Name cannot be empty";
-                    }
-                    return null;
-                  },
-                  controller: nameController,
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.account_circle),
-                      hintText: "John Doe",
-                      hintStyle: TextStyle(color: Colors.grey[600]),
-                      errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Colors.red)),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Colors.grey)),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Colors.grey))),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                /*TextFormField(
+        body: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Image(
+                      image: AssetImage(Config.app_icon), height: 50, width: 50),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const Text(
+                    "Phone Login",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  TextFormField(
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Name cannot be empty";
+                      }
+                      return null;
+                    },
+                    controller: nameController,
+                    textInputAction: TextInputAction.next,
+                    decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.account_circle),
+                        hintText: "John Doe",
+                        hintStyle: TextStyle(color: Colors.grey[600]),
+                        errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Colors.red)),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Colors.grey)),
+                        enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Colors.grey))),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  /*TextFormField(
                   validator: (value) {
                     if (value!.isEmpty) {
                       return "Email address cannot be empty";
@@ -109,52 +121,54 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide: const BorderSide(color: Colors.grey))),
-                ),*/
-                const SizedBox(
-                  height: 10,
-                ),
-                TextFormField(
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "Phone Number cannot be empty";
-                    }
-                    return null;
-                  },
-                  controller: phoneController,
-                  textInputAction: TextInputAction.done,
-                  decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.phone),
-                      hintText: "+1 123456789",
-                      hintStyle: TextStyle(color: Colors.grey[600]),
-                      errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Colors.red)),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Colors.grey)),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Colors.grey))),
                 ),
                 const SizedBox(
-                  height: 10,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    login(context, phoneController.text.trim());
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
+                    height: 10,
+                  ),*/
+                  TextFormField(
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Phone Number cannot be empty";
+                      }
+                      return null;
+                    },
+                    controller: phoneController,
+                    textInputAction: TextInputAction.done,
+                    decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.phone),
+                        hintText: "+1 123456789",
+                        hintStyle: TextStyle(color: Colors.grey[600]),
+                        errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Colors.red)),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Colors.grey)),
+                        enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Colors.grey))),
                   ),
-                  child: const Text("Register"),
-                )
-              ],
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      login(context, phoneController.text.trim());
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
+                    child: const Text("Register"),
+                  )
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
   }
+
 
   Future login(BuildContext context, String mobile) async {
     final signInProvider = context.read<SignInProvider>();

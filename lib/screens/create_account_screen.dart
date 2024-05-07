@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:multilogin2/screens/login_screen.dart';
 import 'package:multilogin2/utils/config.dart';
 import 'package:provider/provider.dart';
@@ -79,12 +80,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                             fit: BoxFit.cover,
                           ),
                           const SizedBox(height: 40),
-                          const Text(
+                          Text(
                             "Create Your Account",
-                            style: TextStyle(
-                              fontSize: 25,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: GoogleFonts.exo2(fontSize: 25),
                           ),
                           const SizedBox(height: 5),
                           const Text(
