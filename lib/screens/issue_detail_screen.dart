@@ -146,8 +146,8 @@ class IssueDetailPage extends StatelessWidget {
                         issue.description,
                         style: TextStyle(fontSize: 18),
                       ),
-                      if (issue.image != '') SizedBox(height: 20),
-                      if (issue.image != '')
+                      if (issue.image != '' && issue.image != null) SizedBox(height: 20),
+                      if (issue.image != '' && issue.image != null)
                         Image.network(
                           issue.image!,
                           width: double.infinity,
