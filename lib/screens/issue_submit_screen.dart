@@ -131,7 +131,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(child: Scaffold(
       backgroundColor: Colors.transparent,
       body: SingleChildScrollView(
         child: Container(
@@ -273,36 +273,54 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
                               maxLines: 8, // Adjust the number of lines
                             ),
                             SizedBox(height: 30),
-                            ElevatedButton(
-                              onPressed: () async {},
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  icon: Icon(Icons.arrow_back),
+                                  color: Colors.black,
                                 ),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 15, horizontal: 40),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.email,
-                                      color: Colors.white,
-                                    ),
-                                    SizedBox(width: 10),
-                                    Text(
-                                      "Submit Issue",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w500,
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 16.0), // Adjust left padding as needed
+                                    child: RoundedLoadingButton(
+                                      controller: submitController,
+                                      successColor: Colors.green,
+                                      errorColor: Colors.red,
+                                      onPressed: () async {
+                                        submitController.start();
+                                        await Future.delayed(Duration(milliseconds: 500));
+                                        _submitIssue();
+                                      },
+                                      width: double.infinity, // Occupy all available width
+                                      elevation: 0,
+                                      borderRadius: 10,
+                                      color: Colors.black,
+                                      child: Wrap(
+                                        children: const [
+                                          Icon(
+                                            Icons.subdirectory_arrow_right_outlined,
+                                            size: 20,
+                                            color: Colors.white,
+                                          ),
+                                          SizedBox(width: 5),
+                                          Text(
+                                            "Submit Issue",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
                           ],
                         ),
@@ -315,6 +333,16 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
           ),
         ),
       ),
+    ),
+      onWillPop: () async {
+        // Handle the back button press here
+        // Navigate back to the previous page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+        return false; // Prevent the default back button behavior
+      },
     );
   }
 }

@@ -195,90 +195,104 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                                   obscureText: true,
                                 ),
                                 SizedBox(height: 30),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    if (_passwordController.text !=
-                                        _confirmPasswordController.text) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                              'Passwords do not match!'),
-                                          backgroundColor: Colors.red,
-                                        ),
-                                      );
-                                      return;
-                                    }
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start, // Align children at the start
+                                  children: [
+                                    IconButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      icon: Icon(Icons.arrow_back),
+                                      color: Colors.black,
+                                    ),
+                                    Expanded( // Add Expanded widget here
+                                      child: ElevatedButton(
+                                        onPressed: () async {
+                                          if (_passwordController.text !=
+                                              _confirmPasswordController.text) {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                    'Passwords do not match!'),
+                                                backgroundColor: Colors.red,
+                                              ),
+                                            );
+                                            return;
+                                          }
 
-                                    try {
-                                      await sp.emailAndPassword(
-                                          email: _emailController.text.trim(),
-                                          password: _passwordController.text.trim(),
-                                          name: _nameController.text.trim()
-                                      );
-                                      await sp.saveDataToFirestore();
-                                      sp.saveDataToSharedPreferences();
-                                      nextScreenReplace(context, const HomeScreen());
-                                    } catch (e) {
-                                      if (e.toString() == 'weak-password') {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                                'Provided password is too weak'),
-                                            backgroundColor: Colors.red,
-                                          ),
-                                        );
-                                      } else if (e.toString() ==
-                                          'email-already-in-use') {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                                'Provided e-mail already in use'),
-                                            backgroundColor: Colors.red,
-                                          ),
-                                        );
-                                      } else {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                                'An error occurred. Please try again later.'),
-                                            backgroundColor: Colors.red,
-                                          ),
-                                        );
-                                      }
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.black,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 15, horizontal: 40),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(
-                                          Icons.email,
-                                          color: Colors.white,
-                                        ),
-                                        SizedBox(width: 10),
-                                        Text(
-                                          "Create Account",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w500,
+                                          try {
+                                            await sp.emailAndPassword(
+                                                email: _emailController.text.trim(),
+                                                password: _passwordController.text.trim(),
+                                                name: _nameController.text.trim()
+                                            );
+                                            await sp.saveDataToFirestore();
+                                            sp.saveDataToSharedPreferences();
+                                            nextScreenReplace(context, const HomeScreen());
+                                          } catch (e) {
+                                            if (e.toString() == 'weak-password') {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                      'Provided password is too weak'),
+                                                  backgroundColor: Colors.red,
+                                                ),
+                                              );
+                                            } else if (e.toString() ==
+                                                'email-already-in-use') {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                      'Provided e-mail already in use'),
+                                                  backgroundColor: Colors.red,
+                                                ),
+                                              );
+                                            } else {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                      'An error occurred. Please try again later.'),
+                                                  backgroundColor: Colors.red,
+                                                ),
+                                              );
+                                            }
+                                          }
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.black,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(10),
                                           ),
                                         ),
-                                      ],
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 15, horizontal: 10),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.email,
+                                                color: Colors.white,
+                                              ),
+                                              SizedBox(width: 10),
+                                              Text(
+                                                "Create Account",
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                  ],
                                 ),
                               ],
                             ),
