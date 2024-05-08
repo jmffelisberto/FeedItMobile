@@ -21,6 +21,7 @@ void main() async {
         appId: "1:418688149116:android:5f5d2e2f1affc2b6484bf9",
         messagingSenderId: "418688149116",
         projectId: "multilogin2-d03cd",
+        storageBucket: "gs://multilogin2-d03cd.appspot.com"
       ))
       : await Firebase.initializeApp();
 

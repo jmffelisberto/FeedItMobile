@@ -42,8 +42,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     SignInProvider sp = context.watch<SignInProvider>();
     return WillPopScope(
       onWillPop: () async {
-        // Handle the back button press here
-        // Navigate back to the previous page
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => LoginScreen()),

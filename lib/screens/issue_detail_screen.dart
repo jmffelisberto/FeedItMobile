@@ -99,70 +99,96 @@ class IssueDetailPage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    issue.title,
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      issue.title,
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  SizedBox(width: 5),
+                  Text(
+                    "by",
+                    style: TextStyle(fontSize: 10),
+                  ),
+                  SizedBox(width: 12),
+                  CircleAvatar(
+                    radius: 14,
+                    backgroundImage: NetworkImage(issue.authorProfilePicture ?? ''),
+                  ),
+                  SizedBox(width: 3),
+                  Text(
+                    issue.authorName ?? '',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              Card(
+                elevation: 3,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Description:',
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        issue.description,
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      if (issue.image != '') SizedBox(height: 20),
+                      if (issue.image != '')
+                        Image.network(
+                          issue.image!,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                            if (loadingProgress == null) {
+                              return child;
+                            } else {
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes != null
+                                      ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              );
+                            }
+                          },
+                          errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                            return Text('Error loading image');
+                          },
+                        ),
+                      SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildTagContainer(issue.tag),
+                          Text(
+                            formatTimestamp(issue.createdAt),
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                SizedBox(width: 5), // Reduced spacing
-                Text(
-                  "by",
-                  style: TextStyle(fontSize: 10), // Reduced font size
-                ),
-                SizedBox(width: 12), // Reduced spacing
-                CircleAvatar(
-                  radius: 14, // Reduced size
-                  backgroundImage: NetworkImage(issue.authorProfilePicture ?? ''),
-                ),
-                SizedBox(width: 3), // Reduced spacing
-                Text(
-                  issue.authorName ?? '',
-                  style: TextStyle(fontSize: 14), // Reduced font size
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            Card(
-              elevation: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Description:',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      issue.description,
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildTagContainer(issue.tag), // Display the styled tag
-                        Text(
-                          formatTimestamp(issue.createdAt),
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
+
 }

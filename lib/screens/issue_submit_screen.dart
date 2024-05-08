@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:multilogin2/screens/home_screen.dart';
 import 'package:multilogin2/screens/your_issues_screen.dart';
@@ -12,8 +12,9 @@ import 'package:multilogin2/utils/issue.dart';
 import 'package:multilogin2/utils/next_screen.dart';
 import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../utils/config.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class SubmitIssueScreen extends StatefulWidget {
   const SubmitIssueScreen({Key? key}) : super(key: key);
@@ -29,6 +30,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
   late String _selectedTag;
   final List<String> _tagOptions = ['Work', 'Leisure', 'Other'];
   final RoundedLoadingButtonController submitController = RoundedLoadingButtonController();
+  File? _imageFile;
 
   @override
   void initState() {
@@ -45,6 +47,16 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     _descriptionController.dispose();
     _tagController.dispose();
     super.dispose();
+  }
+
+  Future<void> pickImageFromGallery() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+    }
   }
 
   Future<void> _storeLocally(Issue issue) async {
@@ -71,7 +83,6 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
 
       if (user != null) {
         // Fetch author details from Firestore using the UID
-
         Issue issue = Issue(
           title: title,
           description: description,
@@ -83,27 +94,61 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
         );
 
         var connectivityResult = await Connectivity().checkConnectivity();
-        if (connectivityResult == ConnectivityResult.none) {
-          // Device is offline, store data locally
-          await _storeLocally(issue);
-          await Future.delayed(Duration(milliseconds: 500));
-          submitController.success();
-          nextScreenReplace(context, LocalIssuesScreen(initialTabIndex: 0));
-        } else {
+        if (connectivityResult != ConnectivityResult.none) {
           // Device is online, submit data to Firestore
-          submitController.success();
-          await submitIssueToFirestore(issue);
+          submitController.start();
+          await _uploadImage(issue);
+        } else {
+          // Device is offline
+          await _storeLocally(issue);
+          submitController.error();
         }
       } else {
         print('User not logged in');
-        await Future.delayed(Duration(milliseconds: 500));
         submitController.error();
       }
     } else {
-      await Future.delayed(Duration(milliseconds: 500));
       submitController.error();
     }
   }
+
+  Future<void> _uploadImage(Issue issue) async {
+    // Check if an image was selected
+    if (_imageFile != null) {
+      String? imageUrl = await _uploadImageToStorage(_imageFile!);
+      if (imageUrl != null) {
+        issue.image = imageUrl;
+      } else {
+        print('Failed to upload image');
+        submitController.error();
+        return;
+      }
+    }
+
+    // Submit issue to Firestore
+    try {
+      submitController.success();
+      await submitIssueToFirestore(issue);
+    } catch (e) {
+      print('Error submitting issue: $e');
+      submitController.error();
+    }
+  }
+
+  Future<String?> _uploadImageToStorage(File imageFile) async {
+    try {
+      print(FirebaseStorage.instance.toString());
+      Reference storageReference = FirebaseStorage.instance.ref().child('images/${DateTime.now().millisecondsSinceEpoch}');
+      UploadTask uploadTask = storageReference.putFile(imageFile);
+      TaskSnapshot taskSnapshot = await uploadTask;
+      String downloadURL = await taskSnapshot.ref.getDownloadURL();
+      return downloadURL;
+    } catch (e) {
+      print('Error uploading image: $e');
+      return null;
+    }
+  }
+
 
   Future<void> submitIssueToFirestore(Issue issue) async {
     try {
@@ -251,26 +296,38 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
                               ],
                             ),
                             SizedBox(height: 20),
-                            TextFormField(
-                              controller: _descriptionController,
-                              decoration: InputDecoration(
-                                hintText: 'Description',
-                                hintStyle: TextStyle(color: Colors.grey),
-                                filled: true,
-                                fillColor: Colors.grey[200],
-                                contentPadding: EdgeInsets.all(15),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide:
-                                  BorderSide(color: Colors.transparent),
+                            Stack(
+                              children: [
+                                TextFormField(
+                                  controller: _descriptionController,
+                                  decoration: InputDecoration(
+                                    hintText: 'Description',
+                                    hintStyle: TextStyle(color: Colors.grey),
+                                    filled: true,
+                                    fillColor: Colors.grey[200],
+                                    contentPadding: EdgeInsets.all(15),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(color: Colors.transparent),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(color: Colors.transparent),
+                                    ),
+                                  ),
+                                  maxLines: 8,
                                 ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide:
-                                  BorderSide(color: Colors.transparent),
+                                Positioned(
+                                  left: 5, // Adjust the left position
+                                  bottom: 5, // Adjust the bottom position
+                                  child: IconButton(
+                                    icon: Icon(Icons.image),
+                                    onPressed: () {
+                                      pickImageFromGallery();
+                                    },
+                                  ),
                                 ),
-                              ),
-                              maxLines: 8, // Adjust the number of lines
+                              ],
                             ),
                             SizedBox(height: 30),
                             Row(
@@ -278,7 +335,10 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
                               children: [
                                 IconButton(
                                   onPressed: () {
-                                    Navigator.of(context).pop();
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => HomeScreen()),
+                                    );
                                   },
                                   icon: Icon(Icons.arrow_back),
                                   color: Colors.black,
@@ -335,8 +395,6 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
       ),
     ),
       onWillPop: () async {
-        // Handle the back button press here
-        // Navigate back to the previous page
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomeScreen()),

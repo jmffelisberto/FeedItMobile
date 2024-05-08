@@ -197,8 +197,6 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen>
 
     return WillPopScope(
       onWillPop: () async {
-        // Handle the back button press here
-        // Navigate back to the previous page
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomeScreen()),

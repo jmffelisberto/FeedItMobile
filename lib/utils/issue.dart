@@ -8,7 +8,7 @@ class Issue {
   final String title;
   final String description;
   final String tag;
-  final String? image;
+  String? image;
   final Timestamp? createdAt;
   final String? authorName; // Add author's name field
   final String? authorProfilePicture; // Add author's profile picture field
