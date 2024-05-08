@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:multilogin2/screens/home_screen.dart';
 import 'package:multilogin2/screens/your_issues_screen.dart';
@@ -15,6 +16,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/config.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart' as path;
+import '../utils/image_uploader.dart';
 
 class SubmitIssueScreen extends StatefulWidget {
   const SubmitIssueScreen({Key? key}) : super(key: key);
@@ -31,6 +34,9 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
   final List<String> _tagOptions = ['Work', 'Leisure', 'Other'];
   final RoundedLoadingButtonController submitController = RoundedLoadingButtonController();
   File? _imageFile;
+  ImageUploader uploader = ImageUploader();
+  bool hasInternetConnection = true;
+
 
   @override
   void initState() {
@@ -39,6 +45,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     _descriptionController = TextEditingController();
     _tagController = TextEditingController();
     _selectedTag = _tagOptions.first;
+    checkInternetConnection();
   }
 
   @override
@@ -47,6 +54,13 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     _descriptionController.dispose();
     _tagController.dispose();
     super.dispose();
+  }
+
+  Future<void> checkInternetConnection() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    setState(() {
+      hasInternetConnection = connectivityResult != ConnectivityResult.none;
+    });
   }
 
   Future<void> pickImageFromGallery() async {
@@ -63,6 +77,9 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     // Serialize the issue object into a JSON string
     Map<String, dynamic> jsonIssue = issue.toJson();
+    //print("The image file path is: " + _imageFile.toString());
+    String imagePath = _imageFile != null ? path.basename(_imageFile!.path) : '';
+    jsonIssue['imagePath'] = imagePath;
     if (issue.createdAt != null) {
       jsonIssue['createdAt'] = issue.createdAt!.millisecondsSinceEpoch;
     }
@@ -76,6 +93,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     String title = _titleController.text.trim();
     String description = _descriptionController.text.trim();
     String tag = _selectedTag.trim();
+    ImageUploader uploader = ImageUploader();
 
     if (title.isNotEmpty && description.isNotEmpty && tag.isNotEmpty) {
       // Fetch the current user
@@ -97,11 +115,23 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
         if (connectivityResult != ConnectivityResult.none) {
           // Device is online, submit data to Firestore
           submitController.start();
-          await _uploadImage(issue);
+          String imagePath = _imageFile != null ? _imageFile!.path : '';
+          issue.image = await uploader.uploadImageToStorage(imagePath);
+          try {
+            submitController.success();
+            await submitIssueToFirestore(issue);
+          } catch (e) {
+            print('Error submitting issue: $e');
+            submitController.error();
+          }
         } else {
           // Device is offline
           await _storeLocally(issue);
           submitController.error();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => LocalIssuesScreen(initialTabIndex: 0)),
+          );
         }
       } else {
         print('User not logged in');
@@ -109,43 +139,6 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
       }
     } else {
       submitController.error();
-    }
-  }
-
-  Future<void> _uploadImage(Issue issue) async {
-    // Check if an image was selected
-    if (_imageFile != null) {
-      String? imageUrl = await _uploadImageToStorage(_imageFile!);
-      if (imageUrl != null) {
-        issue.image = imageUrl;
-      } else {
-        print('Failed to upload image');
-        submitController.error();
-        return;
-      }
-    }
-
-    // Submit issue to Firestore
-    try {
-      submitController.success();
-      await submitIssueToFirestore(issue);
-    } catch (e) {
-      print('Error submitting issue: $e');
-      submitController.error();
-    }
-  }
-
-  Future<String?> _uploadImageToStorage(File imageFile) async {
-    try {
-      print(FirebaseStorage.instance.toString());
-      Reference storageReference = FirebaseStorage.instance.ref().child('images/${DateTime.now().millisecondsSinceEpoch}');
-      UploadTask uploadTask = storageReference.putFile(imageFile);
-      TaskSnapshot taskSnapshot = await uploadTask;
-      String downloadURL = await taskSnapshot.ref.getDownloadURL();
-      return downloadURL;
-    } catch (e) {
-      print('Error uploading image: $e');
-      return null;
     }
   }
 
@@ -218,9 +211,46 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
                           fontWeight: FontWeight.w300,
                         ),
                       ),
+                      SizedBox(height: 20),
+                      if (!hasInternetConnection) // Show icon and message if there's no internet connection
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width, // Set the width to match the screen width
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.yellow, // Change color as needed
+                                borderRadius: BorderRadius.circular(10), // Set border radius to round the corners
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center, // Center the icon and text horizontally
+                                crossAxisAlignment: CrossAxisAlignment.center, // Center the icon and text vertically
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 16.0), // Add left padding for the icon
+                                    child: Icon(
+                                      FontAwesomeIcons.exclamationTriangle, // Corrected icon name
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                  SizedBox(width: 16), // Add SizedBox for padding
+                                  Flexible( // Use Flexible instead of Expanded
+                                    child: Text(
+                                      "Turn on mobile data and reload the page to submit an issue with an image",
+                                      style: TextStyle(color: Colors.black, fontSize: 12),
+                                      maxLines: 2, // Allow the text to have maximum 2 lines
+                                      overflow: TextOverflow.ellipsis, // Handle text overflow
+                                    ),
+                                  ),
+                                  SizedBox(width: 16), // Add SizedBox for padding
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                     ],
                   ),
-                  SizedBox(height: 50),
+                  SizedBox(height: 30),
                   Expanded(
                     child: Container(
                       width: double.infinity,
@@ -318,12 +348,32 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
                                   maxLines: 8,
                                 ),
                                 Positioned(
-                                  left: 5, // Adjust the left position
-                                  bottom: 5, // Adjust the bottom position
-                                  child: IconButton(
-                                    icon: Icon(Icons.image),
-                                    onPressed: () {
-                                      pickImageFromGallery();
+                                  left: 5,
+                                  bottom: 5,
+                                  child: FutureBuilder(
+                                    future: Connectivity().checkConnectivity(),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        // Future is still loading, display a loading indicator or placeholder
+                                        return CircularProgressIndicator(); // or any other widget
+                                      } else if (snapshot.connectionState == ConnectionState.done) {
+                                        // Future has completed, check the result
+                                        if (snapshot.data == ConnectivityResult.none) {
+                                          // No internet connection, do not display the IconButton
+                                          return SizedBox.shrink(); // Empty SizedBox to occupy space but not render anything
+                                        } else {
+                                          // Internet connection available, display the IconButton
+                                          return IconButton(
+                                            icon: Icon(Icons.image),
+                                            onPressed: () {
+                                              pickImageFromGallery();
+                                            },
+                                          );
+                                        }
+                                      } else {
+                                        // Handle other ConnectionState if necessary
+                                        return SizedBox.shrink();
+                                      }
                                     },
                                   ),
                                 ),

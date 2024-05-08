@@ -29,9 +29,6 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
     super.initState();
     _loadCloudIssues();
     _connectivityService = ConnectivityService(onConnectionRestored: () {
-      if (_localIssues.isNotEmpty) {
-        _fetchCloudIssues();
-      }
       setState(() {
         _hasConnection = true;
       });
@@ -121,27 +118,6 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
       print('Error fetching author name: $e');
       return null;
     }
-  }
-
-  void _fetchCloudIssues() async {
-    // Set _isSubmittingLocalIssues to true to trigger the rotating icon
-    setState(() {});
-
-    // Submit local issues to the cloud
-    await Issue.submitLocalIssues();
-
-    // Fetch cloud issues to refresh the UI
-    await _loadCloudIssues();
-
-    // Check connectivity and update _hasConnection accordingly
-    bool hasConnection = await _connectivityService.checkConnectivity();
-    setState(() {
-      _hasConnection = hasConnection;
-    });
-
-    // Set _isSubmittingLocalIssues to false to stop the rotating icon
-    _isSubmittingLocalIssues = false;
-    setState(() {});
   }
 
   @override

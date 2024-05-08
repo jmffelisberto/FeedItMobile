@@ -1,17 +1,22 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'image_uploader.dart';
 
 class Issue {
   final String title;
   final String description;
   final String tag;
   String? image;
+  String? imagePath; //for local issues
   final Timestamp? createdAt;
-  final String? authorName; // Add author's name field
-  final String? authorProfilePicture; // Add author's profile picture field
+  final String? authorName;
+  final String? authorProfilePicture;
   final String uid;
 
   Issue({
@@ -19,6 +24,7 @@ class Issue {
     required this.description,
     required this.tag,
     this.image,
+    this.imagePath,
     this.createdAt,
     this.authorName,
     this.authorProfilePicture,
@@ -63,16 +69,40 @@ class Issue {
   static Future<void> submitLocalIssues() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String>? localIssuesJson = prefs.getStringList('local_issues');
+    ImageUploader uploader = ImageUploader();
+
     if (localIssuesJson != null) {
-      List<Issue> localIssues = localIssuesJson
-          .map((json) => Issue.fromJson(jsonDecode(json)))
-          .toList();
-      for (Issue issue in localIssues) {
+      // Create a copy of the list to iterate over
+      List<String> localIssuesJsonCopy = List.from(localIssuesJson);
+
+      for (String issueJson in localIssuesJsonCopy) {
+        // Deserialize the issue JSON string
+        Map<String, dynamic> jsonIssue = jsonDecode(issueJson);
+        Issue issue = Issue.fromJson(jsonIssue);
+
+        // Check if the issue has an image path
+        String? imagePath = jsonIssue['imagePath'];
+        if (imagePath != null && imagePath.isNotEmpty) {
+          // Upload the image to Firebase Storage
+          String imageUrl = await uploader.uploadImageToStorage(imagePath);
+          // Update the issue object with the image URL
+          issue.image = imageUrl;
+          issue.imagePath = null;
+        }
+
+        // Submit the updated issue to Firestore
         await submitIssueToFirebase(issue);
+
+        // Remove the local issue from SharedPreferences
+        localIssuesJson.remove(issueJson);
       }
-      await prefs.remove('local_issues');
+
+      // Update SharedPreferences after processing all local issues
+      await prefs.setStringList('local_issues', localIssuesJson);
     }
   }
+
+
 
   static Future<void> submitIssueToFirebase(Issue issue) async {
     try {

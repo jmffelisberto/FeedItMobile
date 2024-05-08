@@ -118,7 +118,7 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen>
           .get();
       List<Issue> cloudIssues = querySnapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        print('Data from Firestore: $data'); // Print the data retrieved from Firestore
+        //print('Data from Firestore: $data'); // Print the data retrieved from Firestore
         return Issue(
           title: data['title'] ?? '', // Use default value if 'title' is null
           description: data['description'] ?? '', // Use default value if 'description' is null
