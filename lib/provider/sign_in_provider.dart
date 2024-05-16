@@ -34,6 +34,16 @@ class SignInProvider extends ChangeNotifier {
   String? _name;
   String? get name => _name;
 
+  void updateName(String newName) {
+    _name = newName;
+    notifyListeners();
+  }
+
+  void updateImage(String newimageUrl) {
+    _imageUrl = newimageUrl;
+    notifyListeners();
+  }
+
   SignInProvider(){
     checkSignInUser();
   }

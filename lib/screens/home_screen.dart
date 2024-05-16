@@ -10,6 +10,7 @@ import 'package:multilogin2/utils/next_screen.dart';
 
 import '../utils/config.dart';
 import 'all_issues_screen.dart';
+import 'edit_profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -73,13 +74,23 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 35,
                         height: 35,
                         decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: Colors.yellow),
-                        child: const Icon(
-                          FontAwesomeIcons.pencil,
-                          color: Colors.black,
-                          size: 20,
-                        ),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EditAccountScreen(), // Navigate to the EditAccountScreen
+                              ),
+                            );
+                          },
+                          child: Icon(
+                            FontAwesomeIcons.pencil,
+                            color: Colors.black,
+                            size: 20,
+                          ),
                       ),
                     ),
+                    )
                   ],
                 ),
                 const SizedBox(height: 10),
