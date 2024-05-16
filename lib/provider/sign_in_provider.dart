@@ -8,6 +8,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:multilogin2/utils/next_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../screens/home_screen.dart';
+
 class SignInProvider extends ChangeNotifier {
 
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
@@ -41,6 +43,31 @@ class SignInProvider extends ChangeNotifier {
 
   void updateImage(String newimageUrl) {
     _imageUrl = newimageUrl;
+    notifyListeners();
+  }
+
+  void updateEmail(String? newEmail) {
+    _email = newEmail;
+    notifyListeners();
+  }
+
+  void updateUid(String? newUid) {
+    _uid = newUid;
+    notifyListeners();
+  }
+
+  void updateProvider(String? newProvider) {
+    _provider = newProvider;
+    notifyListeners();
+  }
+
+  void updateErrorCode(String? newErrorCode) {
+    _errorCode = newErrorCode;
+    notifyListeners();
+  }
+
+  void setHasError(bool value) {
+    _hasError = value;
     notifyListeners();
   }
 
@@ -280,6 +307,32 @@ class SignInProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> handleEmailSignIn(String email, String password) async {
+    try {
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      final uid = credential.user?.uid;
+
+      // Fetch user data from Firestore based on UID
+      await getUserDataFromFirestore(uid);
+
+      // Save user data to SharedPreferences
+      saveDataToSharedPreferences();
+      // Navigate to the home screen
+    } catch (e) {
+      if (e.toString() == 'user-not-found') {
+        throw ('No user found for that email.');
+      } else if (e.toString() == 'wrong-password') {
+        throw ('Wrong password provided for that user.');
+      } else {
+        throw ('An error occurred. Please try again later.');
+      }
+    }
+  }
+
 
 
 

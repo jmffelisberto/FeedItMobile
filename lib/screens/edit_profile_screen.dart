@@ -42,6 +42,9 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
       if (_image != null){
         sp.updateImage(_image!.path);
       }
+      sp.updateEmail(sp.email);
+      sp.updateProvider(sp.provider);
+      sp.updateUid(sp.uid);
       await sp.saveDataToFirestore();
 
       await Future.delayed(Duration(seconds: 2));

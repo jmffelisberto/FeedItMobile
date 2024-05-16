@@ -136,17 +136,20 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                     suffixIcon: IconButton(
                                       onPressed: () async {
-                                        User? loggdIn = await handleEmailSignIn();
-                                        if (loggdIn != null){
-                                          await sp.getUserDataFromFirestore(loggdIn?.uid);
-                                          sp.getDataFromSharedPreferences();
-                                          handleAfterSignIn();
-                                        } else {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
+                                        try {
+                                          await sp.handleEmailSignIn(
+                                            _emailController.text.trim(),
+                                            _passwordController.text.trim(),
+                                          );
+                                          Future.delayed(const Duration(milliseconds: 1000)).then((value) {
+                                            nextScreenReplace(context, const HomeScreen());
+                                          });
+                                          // Login successful, navigate to the home screen
+                                          nextScreenReplace(context, HomeScreen());
+                                        } catch (e) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
                                             SnackBar(
-                                              content: Text(
-                                                  'Something\'s wrong. Review your credentials or create a new account.'),
+                                              content: Text(e.toString()),
                                               backgroundColor: Colors.red,
                                             ),
                                           );
@@ -395,7 +398,6 @@ class _LoginScreenState extends State<LoginScreen> {
           email: _emailController.text.trim(),
           password: _passwordController.text.trim()
       );
-
       return credential.user;
 
     } catch (e) {
