@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:multilogin2/provider/internet_provider.dart';
 import 'package:multilogin2/screens/create_account_screen.dart';
+import 'package:multilogin2/screens/forgot_password_screen.dart';
 import 'package:multilogin2/screens/home_screen.dart';
 import 'package:multilogin2/screens/phoneauth_screen.dart';
 import 'package:multilogin2/utils/next_screen.dart';
@@ -164,9 +165,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                   obscureText: true,
                                 ),
                                 SizedBox(height: 20),
-                                Text("Forgot your password?",
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => ForgotPasswordScreen()),
+                                    );
+                                  },
+                                  child: Text(
+                                    "Forgot your password?",
                                     style: TextStyle(
-                                        fontSize: 10, color: Colors.grey)),
+                                      fontSize: 10,
+                                      color: Colors.grey,
+                                      decoration: TextDecoration.underline, // Optionally add underline
+                                    ),
+                                  ),
+                                ),
                                 SizedBox(height: 20),
                                 RoundedLoadingButton(
                                   controller: emailButtonController,

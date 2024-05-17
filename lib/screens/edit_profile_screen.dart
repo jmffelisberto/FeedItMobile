@@ -19,6 +19,14 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   final TextEditingController _nameController = TextEditingController();
   File? _image;
 
+  @override
+  void initState() {
+    super.initState();
+    final sp = context.read<SignInProvider>();
+    _nameController.text = sp.name!; // Set the initial value to the current name
+  }
+
+
   Future<void> _getImage(ImageSource source) async {
     final pickedFile = await ImagePicker().pickImage(source: source);
 
@@ -36,10 +44,10 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   Future<void> _updateProfile() async {
     try {
       final sp = context.read<SignInProvider>();
-      if (_nameController != null) {
+      if (_nameController.text.isNotEmpty) {
         sp.updateName(_nameController.text);
       }
-      if (_image != null){
+      if (_image != null) {
         sp.updateImage(_image!.path);
       }
       sp.updateEmail(sp.email);
@@ -61,8 +69,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
         duration: Duration(seconds: 2),
       ));
     }
-
   }
+
 
 
   @override
@@ -128,6 +136,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
               controller: _nameController,
               decoration: InputDecoration(
                 labelText: 'Name',
+                hintText: sp.name
               ),
             ),
 

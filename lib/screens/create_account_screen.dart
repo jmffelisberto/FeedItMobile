@@ -225,6 +225,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                                                 password: _passwordController.text.trim(),
                                                 name: _nameController.text.trim()
                                             );
+                                            sp.updateProvider("EMAIL");
                                             await sp.saveDataToFirestore();
                                             sp.saveDataToSharedPreferences();
                                             nextScreenReplace(context, const HomeScreen());
