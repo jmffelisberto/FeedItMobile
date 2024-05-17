@@ -53,6 +53,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               onPressed: _resetPassword,
               child: Text('Reset Password'),
             ),
+            TextButton(
+              onPressed: () => throw Exception(),
+              child: const Text("Throw Test Exception"),
+            ),
+
           ],
         ),
       ),
