@@ -3,10 +3,63 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:multilogin2/utils/issue.dart';
 
-class IssueDetailPage extends StatelessWidget {
+class IssueDetailPage extends StatefulWidget {
   final Issue issue;
 
   const IssueDetailPage({Key? key, required this.issue}) : super(key: key);
+
+  @override
+  _IssueDetailPageState createState() => _IssueDetailPageState();
+}
+
+class _IssueDetailPageState extends State<IssueDetailPage> {
+  String? _authorName;
+  String? _profilePictureUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAuthorDetails();
+  }
+
+  Future<void> _fetchAuthorDetails() async {
+    String? name = await fetchAuthorName(widget.issue.uid);
+    String? imageUrl = await fetchAuthorProfilePicture(widget.issue.uid);
+    setState(() {
+      _authorName = name;
+      _profilePictureUrl = imageUrl;
+    });
+  }
+
+  // Function to fetch the author's profile picture URL
+  Future<String?> fetchAuthorProfilePicture(String uid) async {
+    try {
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      Map<String, dynamic>? userData = userSnapshot.data() as Map<String, dynamic>?;
+      if (userSnapshot.exists && userData?['image_url'] != null) {
+        return userData?['image_url'];
+      }
+      return null;
+    } catch (e) {
+      print('Error fetching author photo: $e');
+      return null;
+    }
+  }
+
+  // Function to fetch the author's name
+  Future<String?> fetchAuthorName(String uid) async {
+    try {
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      Map<String, dynamic>? userData = userSnapshot.data() as Map<String, dynamic>?;
+      if (userSnapshot.exists && userData?['name'] != null) {
+        return userData?['name'];
+      }
+      return null;
+    } catch (e) {
+      print('Error fetching author name: $e');
+      return null;
+    }
+  }
 
   Widget _buildTagContainer(String tag) {
     Color color;
@@ -86,8 +139,6 @@ class IssueDetailPage extends StatelessWidget {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -108,7 +159,7 @@ class IssueDetailPage extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      issue.title,
+                      widget.issue.title,
                       style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -120,11 +171,13 @@ class IssueDetailPage extends StatelessWidget {
                   SizedBox(width: 12),
                   CircleAvatar(
                     radius: 14,
-                    backgroundImage: NetworkImage(issue.authorProfilePicture ?? ''),
+                    backgroundImage: _profilePictureUrl != null && _profilePictureUrl!.isNotEmpty
+                        ? NetworkImage(_profilePictureUrl!)
+                        : AssetImage('assets/default_profile.png') as ImageProvider,
                   ),
                   SizedBox(width: 3),
                   Text(
-                    issue.authorName ?? '',
+                    _authorName ?? 'Unknown',
                     style: TextStyle(fontSize: 14),
                   ),
                 ],
@@ -143,13 +196,13 @@ class IssueDetailPage extends StatelessWidget {
                       ),
                       SizedBox(height: 10),
                       Text(
-                        issue.description,
+                        widget.issue.description,
                         style: TextStyle(fontSize: 18),
                       ),
-                      if (issue.image != '' && issue.image != null) SizedBox(height: 20),
-                      if (issue.image != '' && issue.image != null)
+                      if (widget.issue.image != '' && widget.issue.image != null) SizedBox(height: 20),
+                      if (widget.issue.image != '' && widget.issue.image != null)
                         Image.network(
-                          issue.image!,
+                          widget.issue.image!,
                           width: double.infinity,
                           fit: BoxFit.cover,
                           loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
@@ -173,9 +226,9 @@ class IssueDetailPage extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          _buildTagContainer(issue.tag),
+                          _buildTagContainer(widget.issue.tag),
                           Text(
-                            formatTimestamp(issue.createdAt),
+                            formatTimestamp(widget.issue.createdAt),
                             style: TextStyle(fontSize: 16),
                           ),
                         ],
@@ -190,5 +243,4 @@ class IssueDetailPage extends StatelessWidget {
       ),
     );
   }
-
 }

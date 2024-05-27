@@ -106,8 +106,6 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
           description: description,
           createdAt: Timestamp.now(),
           tag: tag,
-          authorName: user.displayName,
-          authorProfilePicture: user.photoURL,
           uid: user.uid,
         );
 

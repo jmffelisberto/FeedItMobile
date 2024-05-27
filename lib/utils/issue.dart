@@ -15,8 +15,6 @@ class Issue {
   String? image;
   String? imagePath; //for local issues
   final Timestamp? createdAt;
-  final String? authorName;
-  final String? authorProfilePicture;
   final String uid;
 
   Issue({
@@ -26,8 +24,6 @@ class Issue {
     this.image,
     this.imagePath,
     this.createdAt,
-    this.authorName,
-    this.authorProfilePicture,
     required this.uid
   });
 
@@ -44,12 +40,6 @@ class Issue {
     if (createdAt != null) {
       json['createdAt'] = createdAt;
     }
-    if (authorName != null) {
-      json['authorName'] = authorName; // Add author's name field
-    }
-    if (authorProfilePicture != null) {
-      json['authorProfilePicture'] = authorProfilePicture; // Add author's profile picture field
-    }
     return json;
   }
 
@@ -60,8 +50,6 @@ class Issue {
       tag: json['tag'],
       image: json['image'],
       createdAt: json['createdAt'] != null ? Timestamp.fromMillisecondsSinceEpoch(json['createdAt']) : null,
-      authorName: json['authorName'], // Add author's name field
-      authorProfilePicture: json['authorProfilePicture'], // Add author's profile picture field
       uid: json['uid'],
     );
   }

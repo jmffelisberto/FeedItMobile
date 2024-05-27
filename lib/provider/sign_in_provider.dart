@@ -159,7 +159,7 @@ class SignInProvider extends ChangeNotifier {
         _name = profile['name'];
         _email = profile['email'];
         _imageUrl = profile!['picture']['data']['url'];
-        _uid = profile['id'];
+        _uid = firebaseAuth.currentUser!.uid;
         _hasError = false;
         _provider = "FACEBOOK";
         notifyListeners();
@@ -333,8 +333,4 @@ class SignInProvider extends ChangeNotifier {
       }
     }
   }
-
-
-
-
 }

@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:multilogin2/provider/issue_service_provider.dart';
 import 'package:multilogin2/screens/issue_detail_screen.dart';
 import 'package:multilogin2/utils/issue.dart';
+
+import '../provider/issue_service_provider.dart';
 
 class AllIssuesPage extends StatefulWidget {
   @override
@@ -23,6 +23,9 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
   bool _isSubmittingLocalIssues = false;
 
   bool _hasConnection = false; // Default to true assuming initial connection
+
+  // Cache for author details
+  Map<String, Map<String, String?>> _authorDetailsCache = {};
 
   @override
   void initState() {
@@ -50,17 +53,29 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
           description: data['description'] ?? '',
           tag: data['tag'] ?? '',
           createdAt: data['createdAt'],
-          authorName: data['authorName'] ?? '',
-          authorProfilePicture: data['authorProfilePicture'] ?? '',
           image: data['image'] ?? '',
           uid: data['uid'] ?? '',
         );
       }).toList();
-      _filteredIssues = List.from(_cloudIssues); // Initialize filtered issues with all issues
-      _extractTags(); // Extract unique tags from issues
+
+      await _cacheAuthorDetails();
+      setState(() {
+        _filteredIssues = List.from(_cloudIssues); // Initialize filtered issues with all issues
+        _extractTags(); // Extract unique tags from issues
+      });
       print('Cloud issues fetched successfully');
     } catch (e) {
       print('Error fetching cloud issues: $e');
+    }
+  }
+
+  Future<void> _cacheAuthorDetails() async {
+    for (var issue in _cloudIssues) {
+      if (!_authorDetailsCache.containsKey(issue.uid)) {
+        String? name = await fetchAuthorName(issue.uid);
+        String? imageUrl = await fetchAuthorProfilePicture(issue.uid);
+        _authorDetailsCache[issue.uid] = {'name': name, 'image_url': imageUrl};
+      }
     }
   }
 
@@ -80,7 +95,7 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
     });
   }
 
-// Function to fetch the author's profile picture URL
+  // Function to fetch the author's profile picture URL
   Future<String?> fetchAuthorProfilePicture(String uid) async {
     try {
       // Access the "users" collection in Firestore and fetch the document with the given UID
@@ -100,7 +115,7 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
     }
   }
 
-// Function to fetch the author's name
+  // Function to fetch the author's name
   Future<String?> fetchAuthorName(String uid) async {
     try {
       // Access the "users" collection in Firestore and fetch the document with the given UID
@@ -154,6 +169,10 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
         itemCount: _filteredIssues.length,
         itemBuilder: (context, index) {
           final issue = _filteredIssues[index];
+          final authorDetails = _authorDetailsCache[issue.uid];
+          final profilePictureUrl = authorDetails?['image_url'] ?? '';
+          final authorName = authorDetails?['name'] ?? 'Unknown';
+
           return GestureDetector(
             onTap: () {
               Navigator.push(
@@ -180,9 +199,11 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
                     ),
                     ListTile(
                       leading: CircleAvatar(
-                        backgroundImage: NetworkImage(issue.authorProfilePicture ?? ''),
+                        backgroundImage: profilePictureUrl.isNotEmpty
+                            ? NetworkImage(profilePictureUrl)
+                            : AssetImage('assets/default_profile.png') as ImageProvider,
                       ),
-                      title: Text(issue.authorName ?? ''),
+                      title: Text(authorName),
                       subtitle: Row(
                         children: [
                           _buildTagContainer(issue.tag),
@@ -204,9 +225,6 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
       ),
     );
   }
-
-
-
 
   // Function to build tag container with specific color based on tag
   Widget _buildTagContainer(String tag) {
@@ -248,7 +266,7 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
     if (difference.inSeconds < 60) {
       return 'just now';
     } else if (difference.inMinutes < 60) {
-      return '${difference.inMinutes} min${difference.inMinutes == 1 ? '' : 's'}. ago';
+      return '${difference.inMinutes} min${difference.inMinutes == 1 ? '' : 's'} ago';
     } else if (difference.inHours < 24) {
       return '${difference.inHours} hour${difference.inHours == 1 ? '' : 's'} ago';
     } else if (difference.inDays == 1) {
@@ -257,5 +275,4 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
       return '${difference.inDays} day${difference.inDays == 1 ? '' : 's'} ago';
     }
   }
-
 }

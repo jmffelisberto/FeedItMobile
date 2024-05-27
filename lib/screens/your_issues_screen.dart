@@ -124,8 +124,6 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen>
           description: data['description'] ?? '', // Use default value if 'description' is null
           tag: data['tag'] ?? '', // Use default value if 'tag' is null
           createdAt: data['createdAt'],
-          authorName: data['authorName'] ?? '', // Add author's name field
-          authorProfilePicture: data['authorProfilePicture'] ?? '', // Add author's profile picture field
           image: data['image'] ?? '', // Add image field
           uid: data['uid'] ?? '',
         );
