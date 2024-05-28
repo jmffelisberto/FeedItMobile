@@ -7,6 +7,7 @@ import 'package:multilogin2/screens/create_account_screen.dart';
 import 'package:multilogin2/screens/forgot_password_screen.dart';
 import 'package:multilogin2/screens/home_screen.dart';
 import 'package:multilogin2/screens/phoneauth_screen.dart';
+import 'package:multilogin2/screens/phonelogin_screen.dart';
 import 'package:multilogin2/utils/next_screen.dart';
 import 'package:multilogin2/utils/snack_bar.dart';
 import 'package:provider/provider.dart';
@@ -277,9 +278,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   controller: phoneController,
                                   successColor: Colors.lightGreen,
                                   onPressed: () {
-                                    nextScreenReplace(
-                                        context, const PhoneAuthScreen());
-                                    phoneController.reset();
+                                    _showPhoneAuthOptionsDialog(context);
                                   },
                                   width: MediaQuery.of(context).size.width * 0.80,
                                   borderRadius: 10,
@@ -340,7 +339,7 @@ class _LoginScreenState extends State<LoginScreen> {
             if (value == true) {
               // user exists
               await signInProvider
-                  .getUserDataFromFirestore(signInProvider.uid)
+                  .getUserDataFromFirestore(signInProvider.uid!)
                   .then((value) => signInProvider
                   .saveDataToSharedPreferences()
                   .then((value) => signInProvider.setSignIn().then((value) {
@@ -383,7 +382,7 @@ class _LoginScreenState extends State<LoginScreen> {
             if (value == true) {
               // user exists
               await signInProvider
-                  .getUserDataFromFirestore(signInProvider.uid)
+                  .getUserDataFromFirestore(signInProvider.uid!)
                   .then((value) => signInProvider
                   .saveDataToSharedPreferences()
                   .then((value) => signInProvider.setSignIn().then((value) {
@@ -437,6 +436,39 @@ class _LoginScreenState extends State<LoginScreen> {
       return null;
     }
   }
+
+  void _showPhoneAuthOptionsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Choose Option"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  nextScreenReplace(
+                      context, const PhoneRegisterScreen());
+                  phoneController.reset(); // Navigate to registration
+                },
+                child: Text("Register"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  nextScreenReplace(
+                      context, PhoneLoginScreen());
+                  phoneController.reset();
+                },
+                child: Text("Login"),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
 
   // handle after signin
   handleAfterSignIn() {

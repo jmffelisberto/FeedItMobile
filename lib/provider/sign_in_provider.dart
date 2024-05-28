@@ -79,6 +79,9 @@ class SignInProvider extends ChangeNotifier {
     final SharedPreferences s = await SharedPreferences.getInstance();
     _isSignedIn = s.getBool("signed_in") ?? false;
     notifyListeners();
+    if (_isSignedIn) {
+      await getDataFromSharedPreferences();
+    }//changed
   }
 
   Future setSignIn() async {
@@ -192,53 +195,66 @@ class SignInProvider extends ChangeNotifier {
 
 
   // ENTRY FOR CLOUDFIRESTORE
-  Future getUserDataFromFirestore(uid) async {
-    await FirebaseFirestore.instance
-        .collection("users")
-        .doc(uid)
-        .get()
-        .then((DocumentSnapshot snapshot) => {
-      _uid = snapshot['uid'],
-      _name = snapshot['name'],
-      _email = snapshot['email'],
-      _imageUrl = snapshot['image_url'],
-      _provider = snapshot['provider'],
-    });
+  Future<void> getUserDataFromFirestore(String uid) async {
+    try {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection("users")
+          .doc(uid)
+          .get();
+      if (snapshot.exists) {
+        _uid = snapshot['uid'];
+        _name = snapshot['name'];
+        _email = snapshot['email'];
+        _imageUrl = snapshot['image_url'];
+        _provider = snapshot['provider'];
+        notifyListeners();
+        print("User data retrieved from Firestore: $_name, $_email, $_provider");
+      } else {
+        print("No user found in Firestore with UID: $uid");
+      }
+    } catch (e) {
+      print("Error getting user data from Firestore: $e");
+    }
   }
 
-  Future saveDataToFirestore() async {
-    final DocumentReference r =
-    FirebaseFirestore.instance.collection("users").doc(uid);
-    await r.set({
-      "name": _name,
-      "email": _email,
-      "uid": _uid,
-      "image_url": _imageUrl,
-      "provider": _provider,
-    });
-    notifyListeners();
+  Future<void> saveDataToFirestore() async {
+    try {
+      final DocumentReference r = FirebaseFirestore.instance.collection("users").doc(uid);
+      await r.set({
+        "name": _name,
+        "email": _email,
+        "uid": _uid,
+        "image_url": _imageUrl,
+        "provider": _provider,
+      });
+      notifyListeners();
+      print("User data saved to Firestore");
+    } catch (e) {
+      print("Error saving data to Firestore: $e");
+    }
   }
 
   //shared preferences gets & sets
-  Future saveDataToSharedPreferences() async {
+  Future<void> saveDataToSharedPreferences() async {
     final SharedPreferences s = await SharedPreferences.getInstance();
     await s.setString('name', _name!);
     await s.setString('email', _email!);
     await s.setString('uid', _uid!);
-    await s.setString('image_url', _imageUrl!);
     await s.setString('provider', _provider!);
+    await s.setString('image_url', _imageUrl!);
     notifyListeners();
+    print("User data saved to SharedPreferences");
   }
 
-  Future getDataFromSharedPreferences() async {
+  Future<void> getDataFromSharedPreferences() async {
     final SharedPreferences s = await SharedPreferences.getInstance();
     _name = s.getString('name');
     _email = s.getString('email');
     _imageUrl = s.getString('image_url');
     _uid = s.getString('uid');
     _provider = s.getString('provider');
-    //print(_name);
     notifyListeners();
+    print("User data retrieved from SharedPreferences: $_name, $_email, $_provider");
   }
 
 
@@ -277,8 +293,31 @@ class SignInProvider extends ChangeNotifier {
     _email = email;
     _imageUrl =
     "https://winaero.com/blog/wp-content/uploads/2017/12/User-icon-256-blue.png";
-    _uid = user.phoneNumber;
+    _uid = FirebaseAuth.instance.currentUser!.uid;
     _provider = "PHONE";
+    notifyListeners();
+  }
+
+  void fetchUserDataByPhone() async {
+    try {
+      User user = FirebaseAuth.instance.currentUser!;
+      _name = user.displayName;
+      _email = user.email;
+      _imageUrl = user.photoURL;
+      _uid = user.uid;
+      _provider = "PHONE";
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void setUser(Map<String, dynamic> snapshot) {
+    _name = snapshot['name'];
+    _email = snapshot['email'];
+    _imageUrl = snapshot['image_url'];
+    _uid = snapshot['uid'];
+    _provider = snapshot['provider'];
     notifyListeners();
   }
 
@@ -294,7 +333,7 @@ class SignInProvider extends ChangeNotifier {
       _email = email;
       _name = name;
       _imageUrl = 'https://winaero.com/blog/wp-content/uploads/2017/12/User-icon-256-blue.png';
-      _provider = 'EMAIL'; // Assuming email sign-in
+      _provider = "EMAIL";
       _hasError = false;
       _errorCode = null;
 
@@ -318,7 +357,7 @@ class SignInProvider extends ChangeNotifier {
       final uid = credential.user?.uid;
 
       // Fetch user data from Firestore based on UID
-      await getUserDataFromFirestore(uid);
+      await getUserDataFromFirestore(uid!);
 
       // Save user data to SharedPreferences
       saveDataToSharedPreferences();

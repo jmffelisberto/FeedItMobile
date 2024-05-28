@@ -9,14 +9,14 @@ import '../utils/config.dart';
 import '../utils/next_screen.dart';
 import 'login_screen.dart';
 
-class PhoneAuthScreen extends StatefulWidget {
-  const PhoneAuthScreen({Key? key}) : super(key: key);
+class PhoneRegisterScreen extends StatefulWidget {
+  const PhoneRegisterScreen({Key? key}) : super(key: key);
 
   @override
-  State<PhoneAuthScreen> createState() => _PhoneAuthScreenState();
+  State<PhoneRegisterScreen> createState() => _PhoneRegisterScreenState();
 }
 
-class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
+class _PhoneRegisterScreenState extends State<PhoneRegisterScreen> {
   final formKey = GlobalKey<FormState>();
   // controller -> phone, email, name, otp code
   TextEditingController phoneController = TextEditingController();
@@ -235,7 +235,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
                                 if (value == true) {
                                   // user exists
                                   await signInProvider
-                                      .getUserDataFromFirestore(signInProvider.uid)
+                                      .getUserDataFromFirestore(signInProvider.uid!)
                                       .then((value) => signInProvider
                                       .saveDataToSharedPreferences()
                                       .then((value) =>

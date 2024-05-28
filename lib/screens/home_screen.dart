@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -26,14 +27,27 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  void initState() {  //for fetching user data purposes
+  void initState() {
     super.initState();
-    getData();        //here
+    Future.microtask(() {
+      final sp = context.read<SignInProvider>();
+      sp.getDataFromSharedPreferences().then((_) {
+        print("Data loaded from SharedPreferences");
+        if (sp.uid == null) {
+          // If UID is still null, force a logout
+          sp.userSignOut();
+          nextScreenReplace(context, const LoginScreen());
+        }
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final sp = context.watch<SignInProvider>();
+    print("HERE!!!!!!!!!!!!!!!!");
+    print(sp.provider);
+    print("HERE!!!!!!!!!!!!!!!!");
     return WillPopScope(
         onWillPop: () async => false,
         child: Scaffold(
@@ -63,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: BorderRadius.circular(60), // Half of the width/height for a perfect circle
                         child: CircleAvatar(
                           backgroundColor: Colors.white,
-                          backgroundImage: NetworkImage("${sp.imageUrl}"),
+                          backgroundImage: NetworkImage("${FirebaseAuth.instance.currentUser?.photoURL ?? sp.imageUrl}"),
                         ),
                       ),
                     ),
@@ -105,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 5,
                 ),
                 Text(
-                  sp.provider == 'PHONE' ? sp.uid ?? '' : sp.email ?? '',
+                  sp.provider == 'PHONE' ? FirebaseAuth.instance.currentUser?.phoneNumber ?? '' : sp.email ?? '',
                   style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w100),
                 ),
                 const SizedBox(
@@ -133,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         FontAwesomeIcons.phone,
                         color: Colors.green,
                       ),
-                    if (sp.provider == "EMAIL")
+                    if (sp.provider == 'EMAIL')
                       Icon(
                         Icons.email,
                         color: Colors.black,
