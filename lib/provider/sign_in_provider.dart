@@ -355,10 +355,9 @@ class SignInProvider extends ChangeNotifier {
         password: password,
       );
       final uid = credential.user?.uid;
-
       // Fetch user data from Firestore based on UID
       await getUserDataFromFirestore(uid!);
-
+      setSignIn();
       // Save user data to SharedPreferences
       saveDataToSharedPreferences();
       // Navigate to the home screen
