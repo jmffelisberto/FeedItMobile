@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -42,12 +43,16 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Stream<DocumentSnapshot> getUserStream() {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .snapshots();
+  }
+
   @override
   Widget build(BuildContext context) {
     final sp = context.watch<SignInProvider>();
-    print("HERE!!!!!!!!!!!!!!!!");
-    print(sp.provider);
-    print("HERE!!!!!!!!!!!!!!!!");
     return WillPopScope(
         onWillPop: () async => false,
         child: Scaffold(
@@ -70,16 +75,50 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Stack(
                   children: [
-                    SizedBox(
-                      width: 120,
-                      height: 120,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(60), // Half of the width/height for a perfect circle
-                        child: CircleAvatar(
-                          backgroundColor: Colors.white,
-                          backgroundImage: NetworkImage("${FirebaseAuth.instance.currentUser?.photoURL ?? sp.imageUrl}"),
-                        ),
-                      ),
+                    StreamBuilder<DocumentSnapshot>(
+                      stream: getUserStream(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return SizedBox(
+                            width: 120,
+                            height: 120,
+                            child: CircularProgressIndicator(), // Show a loading indicator while waiting for data
+                          );
+                        }
+
+                        if (snapshot.hasError) {
+                          return SizedBox(
+                            width: 120,
+                            height: 120,
+                            child: Icon(Icons.error), // Show an error icon if there's an error
+                          );
+                        }
+
+                        if (!snapshot.hasData || snapshot.data == null) {
+                          return SizedBox(
+                            width: 120,
+                            height: 120,
+                            child: Icon(Icons.account_circle, size: 120), // Show a default icon if no data
+                          );
+                        }
+
+                        // Extract the profile picture URL from the snapshot data
+                        String profilePictureUrl = snapshot.data!['image_url'] ?? '';
+
+                        return SizedBox(
+                          width: 120,
+                          height: 120,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(60),
+                            child: CircleAvatar(
+                              backgroundColor: Colors.white,
+                              backgroundImage: profilePictureUrl.isNotEmpty
+                                  ? NetworkImage(profilePictureUrl)
+                                  : AssetImage('assets/default_profile.png') as ImageProvider,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                     Positioned(
                       bottom: 0,
@@ -87,7 +126,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Container(
                         width: 35,
                         height: 35,
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: Colors.yellow),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          color: Colors.yellow,
+                        ),
                         child: GestureDetector(
                           onTap: () {
                             Navigator.push(
@@ -102,9 +144,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Colors.black,
                             size: 20,
                           ),
+                        ),
                       ),
                     ),
-                    )
                   ],
                 ),
                 const SizedBox(height: 10),
