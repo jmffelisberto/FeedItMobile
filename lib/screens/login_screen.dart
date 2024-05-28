@@ -146,8 +146,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                           Future.delayed(const Duration(milliseconds: 1000)).then((value) {
                                             nextScreenReplace(context, const HomeScreen());
                                           });
-                                          // Login successful, navigate to the home screen
-                                          nextScreenReplace(context, HomeScreen());
                                         } catch (e) {
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             SnackBar(
