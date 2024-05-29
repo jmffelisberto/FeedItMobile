@@ -15,7 +15,6 @@ Another trial for skill development purposes.
 
 - Edit Name Implemented
 - Edit Profile Picture Implemented
-- *More Coming Soon...*
 
 ### Storage
 
@@ -27,3 +26,7 @@ Another trial for skill development purposes.
 
 - Submission and retrieving of issues
 - Issues have a title, description, tag and image
+
+### Analytics
+
+- Error & Crash Reporting through _Google Crashlytics_

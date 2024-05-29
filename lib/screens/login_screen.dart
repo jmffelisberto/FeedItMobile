@@ -276,7 +276,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   controller: phoneController,
                                   successColor: Colors.lightGreen,
                                   onPressed: () {
-                                    _showPhoneAuthOptionsDialog(context);
+                                    _showPhoneAuthOptionsModal(context);
                                   },
                                   width: MediaQuery.of(context).size.width * 0.80,
                                   borderRadius: 10,
@@ -435,30 +435,67 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _showPhoneAuthOptionsDialog(BuildContext context) {
-    showDialog(
+  void _showPhoneAuthOptionsModal(BuildContext context) {
+    showModalBottomSheet(
       context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+      ),
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Choose Option"),
-          content: Column(
+        return Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text(
+                "Phone Account Option",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   nextScreenReplace(
                       context, const PhoneRegisterScreen());
-                  phoneController.reset(); // Navigate to registration
+                  phoneController.reset(); // Close the modal
                 },
-                child: Text("Register"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  padding: EdgeInsets.symmetric(vertical: 15),
+                  textStyle: TextStyle(fontSize: 16),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.app_registration, size: 20, color: Colors.white),
+                    SizedBox(width: 10),
+                    Text("Register", style: TextStyle(color: Colors.white)),
+                  ],
+                ),
               ),
+              SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
                   nextScreenReplace(
                       context, PhoneLoginScreen());
-                  phoneController.reset();
+                  phoneController.reset(); // Close the modal
                 },
-                child: Text("Login"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  padding: EdgeInsets.symmetric(vertical: 15),
+                  textStyle: TextStyle(fontSize: 16),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.login, size: 20, color: Colors.white),
+                    SizedBox(width: 10),
+                    Text("Login", style: TextStyle(color: Colors.white)),
+                  ],
+                ),
               ),
             ],
           ),
@@ -466,6 +503,7 @@ class _LoginScreenState extends State<LoginScreen> {
       },
     );
   }
+
 
 
   // handle after signin

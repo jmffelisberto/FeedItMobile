@@ -55,7 +55,7 @@ dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/lobablogowhite.png"
+  image_path: "assets/lobablogoblack.png"
 
 dev_dependencies:
   flutter_test:
