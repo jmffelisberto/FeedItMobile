@@ -92,10 +92,11 @@ class Issue {
 
 
 
+
   static Future<void> submitIssueToFirebase(Issue issue) async {
     try {
       await FirebaseFirestore.instance.collection('issues').add(issue.toJson());
-      print('Issue submitted successfully');
+      print('Issue submitted successfully here.');
     } catch (e) {
       print('Error submitting issue: $e');
     }
@@ -111,7 +112,6 @@ class Issue {
     Timer.periodic(duration, (Timer timer) async {
       var isConnected = await hasInternetConnection();
       if (isConnected) {
-        await submitLocalIssues();
         timer.cancel();
       }
     });

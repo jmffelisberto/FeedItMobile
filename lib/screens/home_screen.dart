@@ -58,12 +58,12 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
-              onPressed: () {}, // Change the onPressed logic as needed
+              onPressed: () {},
               icon: Image.asset(
-                Config.loba_icon_black, // Replace this with the path to your logo asset
-                height: 30, // Adjust the height of the logo as needed
-                width: 30, // Adjust the width of the logo as needed
-              ), // You can replace this with your small logo icon
+                Config.loba_icon_black,
+                height: 30,
+                width: 30,
+              ),
             ),
             title: Text("Dashboard", style: GoogleFonts.exo2()),
             centerTitle: true,// Change the title as needed
@@ -82,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           return SizedBox(
                             width: 120,
                             height: 120,
-                            child: CircularProgressIndicator(), // Show a loading indicator while waiting for data
+                            child: CircularProgressIndicator(),
                           );
                         }
 
@@ -90,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           return SizedBox(
                             width: 120,
                             height: 120,
-                            child: Icon(Icons.error), // Show an error icon if there's an error
+                            child: Icon(Icons.error),
                           );
                         }
 
@@ -98,11 +98,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           return SizedBox(
                             width: 120,
                             height: 120,
-                            child: Icon(Icons.account_circle, size: 120), // Show a default icon if no data
+                            child: Icon(Icons.account_circle, size: 120),
                           );
                         }
 
-                        // Extract the profile picture URL from the snapshot data
                         String profilePictureUrl = snapshot.data!['image_url'] ?? '';
 
                         return SizedBox(

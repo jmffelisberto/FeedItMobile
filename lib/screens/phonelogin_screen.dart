@@ -55,7 +55,7 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
       phoneNumber: phone,
       verificationCompleted: (PhoneAuthCredential credential) async {
         await FirebaseAuth.instance.signInWithCredential(credential);
-        _fetchUserData(context, phone);
+        _fetchUserData(context);
       },
       verificationFailed: (FirebaseAuthException e) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message!)));
@@ -80,11 +80,16 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
       smsCode: code,
     );
     UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-    _fetchUserData(context, userCredential.user!.phoneNumber!);
+    _fetchUserData(context);
   }
 
-  void _fetchUserData(BuildContext context, String phoneNumber) async {
-    final signInProvider = context.read<SignInProvider>();
-    signInProvider.fetchUserDataByPhone();
+  void _fetchUserData(BuildContext context) async {
+    try {
+      final signInProvider = context.read<SignInProvider>();
+      await signInProvider.fetchUserDataByPhone(context);
+    } catch (e) {
+      print('Error fetching user data: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching user data: $e')));
+    }
   }
 }

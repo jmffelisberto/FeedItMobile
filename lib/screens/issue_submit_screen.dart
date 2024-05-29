@@ -75,15 +75,13 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
 
   Future<void> _storeLocally(Issue issue) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    // Serialize the issue object into a JSON string
     Map<String, dynamic> jsonIssue = issue.toJson();
-    //print("The image file path is: " + _imageFile.toString());
-    String imagePath = _imageFile != null ? path.basename(_imageFile!.path) : '';
-    jsonIssue['imagePath'] = imagePath;
+    if (_imageFile != null) {
+      jsonIssue['imagePath'] = _imageFile!.path;
+    }
     if (issue.createdAt != null) {
       jsonIssue['createdAt'] = issue.createdAt!.millisecondsSinceEpoch;
     }
-    // Store the JSON string in shared preferences
     List<String> localIssues = prefs.getStringList('local_issues') ?? [];
     localIssues.add(jsonEncode(jsonIssue));
     await prefs.setStringList('local_issues', localIssues);
@@ -93,14 +91,11 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     String title = _titleController.text.trim();
     String description = _descriptionController.text.trim();
     String tag = _selectedTag.trim();
-    ImageUploader uploader = ImageUploader();
 
     if (title.isNotEmpty && description.isNotEmpty && tag.isNotEmpty) {
-      // Fetch the current user
       User? user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
-        // Fetch author details from Firestore using the UID
         Issue issue = Issue(
           title: title,
           description: description,
@@ -111,19 +106,18 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
 
         var connectivityResult = await Connectivity().checkConnectivity();
         if (connectivityResult != ConnectivityResult.none) {
-          // Device is online, submit data to Firestore
           submitController.start();
-          String imagePath = _imageFile != null ? _imageFile!.path : '';
-          issue.image = await uploader.uploadImageToStorage(imagePath);
+          if (_imageFile != null) {
+            issue.image = await uploader.uploadImageToStorage(_imageFile!.path);
+          }
           try {
-            submitController.success();
             await submitIssueToFirestore(issue);
+            submitController.success();
           } catch (e) {
             print('Error submitting issue: $e');
             submitController.error();
           }
         } else {
-          // Device is offline
           await _storeLocally(issue);
           submitController.error();
           Navigator.pushReplacement(
@@ -167,109 +161,140 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(child: Scaffold(
-      backgroundColor: Colors.transparent,
-      body: SingleChildScrollView(
-        child: Container(
-          width: double.infinity,
-          height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment(0.0, 0.40),
-              colors: [Colors.black, Colors.white],
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+        return false; // Prevent the default back button behavior
+      },
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SingleChildScrollView(
+          child: Container(
+            width: double.infinity,
+            height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment(0.0, 0.40),
+                colors: [Colors.black, Colors.white],
+              ),
             ),
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(height: 80),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image(
-                        image: AssetImage(Config.loba_icon_white),
-                        height: 80,
-                        width: 80,
-                        fit: BoxFit.cover,
-                      ),
-                      const SizedBox(height: 40),
-                      Text(
-                        "Submit New Issue",
-                        style: GoogleFonts.exo2(fontSize: 25, fontWeight: FontWeight.w500),
-                      ),
-                      const SizedBox(height: 5),
-                      const Text(
-                        "What's going on?",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w300,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 80),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image(
+                          image: AssetImage(Config.loba_icon_white),
+                          height: 80,
+                          width: 80,
+                          fit: BoxFit.cover,
                         ),
-                      ),
-                      SizedBox(height: 20),
-                      if (!hasInternetConnection) // Show icon and message if there's no internet connection
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: SizedBox(
-                            width: MediaQuery.of(context).size.width, // Set the width to match the screen width
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.yellow, // Change color as needed
-                                borderRadius: BorderRadius.circular(10), // Set border radius to round the corners
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center, // Center the icon and text horizontally
-                                crossAxisAlignment: CrossAxisAlignment.center, // Center the icon and text vertically
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 16.0), // Add left padding for the icon
-                                    child: Icon(
-                                      FontAwesomeIcons.exclamationTriangle, // Corrected icon name
-                                      color: Colors.red,
-                                    ),
-                                  ),
-                                  SizedBox(width: 16), // Add SizedBox for padding
-                                  Flexible( // Use Flexible instead of Expanded
-                                    child: Text(
-                                      "Turn on mobile data and reload the page to submit an issue with an image",
-                                      style: TextStyle(color: Colors.black, fontSize: 12),
-                                      maxLines: 2, // Allow the text to have maximum 2 lines
-                                      overflow: TextOverflow.ellipsis, // Handle text overflow
-                                    ),
-                                  ),
-                                  SizedBox(width: 16), // Add SizedBox for padding
-                                ],
-                              ),
-                            ),
+                        const SizedBox(height: 40),
+                        Text(
+                          "Submit New Issue",
+                          style: GoogleFonts.exo2(fontSize: 25, fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(height: 5),
+                        const Text(
+                          "What's going on?",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w300,
                           ),
                         ),
-                    ],
-                  ),
-                  SizedBox(height: 30),
-                  Expanded(
-                    child: Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(60),
-                          topRight: Radius.circular(60),
+                      ],
+                    ),
+                    SizedBox(height: 30),
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(60),
+                            topRight: Radius.circular(60),
+                          ),
                         ),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(30),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: TextFormField(
-                                    controller: _titleController,
+                        child: Padding(
+                          padding: EdgeInsets.all(30),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: _titleController,
+                                      decoration: InputDecoration(
+                                        hintText: 'Issue Title',
+                                        hintStyle: TextStyle(color: Colors.grey),
+                                        filled: true,
+                                        fillColor: Colors.grey[200],
+                                        contentPadding: EdgeInsets.all(15),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide(color: Colors.transparent),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide(color: Colors.transparent),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 10),
+                                  DropdownButton<String>(
+                                    value: _selectedTag,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _selectedTag = value!;
+                                      });
+                                    },
+                                    items: _tagOptions.map((String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(
+                                          value,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                                    icon: Icon(
+                                      Icons.arrow_drop_down,
+                                      color: Colors.black,
+                                      size: 30,
+                                    ),
+                                    elevation: 8,
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                    ),
+                                    underline: Container(
+                                      height: 2,
+                                      color: Colors.black,
+                                    ),
+                                    isExpanded: false,
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 20),
+                              Stack(
+                                children: [
+                                  TextFormField(
+                                    controller: _descriptionController,
                                     decoration: InputDecoration(
-                                      hintText: 'Issue Title',
+                                      hintText: 'Description',
                                       hintStyle: TextStyle(color: Colors.grey),
                                       filled: true,
                                       fillColor: Colors.grey[200],
@@ -283,172 +308,85 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
                                         borderSide: BorderSide(color: Colors.transparent),
                                       ),
                                     ),
+                                    maxLines: 8,
                                   ),
-                                ),
-                                SizedBox(width: 10),
-                                DropdownButton<String>(
-                                  value: _selectedTag,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _selectedTag = value!;
-                                    });
-                                  },
-                                  items: _tagOptions.map((String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(
-                                        value,
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.black,
+                                  Positioned(
+                                    left: 5,
+                                    bottom: 5,
+                                    child: IconButton(
+                                      icon: Icon(Icons.image),
+                                      onPressed: () {
+                                        pickImageFromGallery();
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 30),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => HomeScreen()),
+                                      );
+                                    },
+                                    icon: Icon(Icons.arrow_back),
+                                    color: Colors.black,
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 16.0), // Adjust left padding as needed
+                                      child: RoundedLoadingButton(
+                                        controller: submitController,
+                                        successColor: Colors.green,
+                                        errorColor: Colors.red,
+                                        onPressed: () async {
+                                          submitController.start();
+                                          await Future.delayed(Duration(milliseconds: 500));
+                                          _submitIssue();
+                                        },
+                                        width: double.infinity, // Occupy all available width
+                                        elevation: 0,
+                                        borderRadius: 10,
+                                        color: Colors.black,
+                                        child: Wrap(
+                                          children: const [
+                                            Icon(
+                                              Icons.subdirectory_arrow_right_outlined,
+                                              size: 20,
+                                              color: Colors.white,
+                                            ),
+                                            SizedBox(width: 5),
+                                            Text(
+                                              "Submit Issue",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    );
-                                  }).toList(),
-                                  icon: Icon(
-                                    Icons.arrow_drop_down,
-                                    color: Colors.black,
-                                    size: 30,
-                                  ),
-                                  elevation: 8,
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                  ),
-                                  underline: Container(
-                                    height: 2,
-                                    color: Colors.black,
-                                  ),
-                                  isExpanded: false,
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 20),
-                            Stack(
-                              children: [
-                                TextFormField(
-                                  controller: _descriptionController,
-                                  decoration: InputDecoration(
-                                    hintText: 'Description',
-                                    hintStyle: TextStyle(color: Colors.grey),
-                                    filled: true,
-                                    fillColor: Colors.grey[200],
-                                    contentPadding: EdgeInsets.all(15),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(color: Colors.transparent),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(color: Colors.transparent),
                                     ),
                                   ),
-                                  maxLines: 8,
-                                ),
-                                Positioned(
-                                  left: 5,
-                                  bottom: 5,
-                                  child: FutureBuilder(
-                                    future: Connectivity().checkConnectivity(),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState == ConnectionState.waiting) {
-                                        // Future is still loading, display a loading indicator or placeholder
-                                        return CircularProgressIndicator(); // or any other widget
-                                      } else if (snapshot.connectionState == ConnectionState.done) {
-                                        // Future has completed, check the result
-                                        if (snapshot.data == ConnectivityResult.none) {
-                                          // No internet connection, do not display the IconButton
-                                          return SizedBox.shrink(); // Empty SizedBox to occupy space but not render anything
-                                        } else {
-                                          // Internet connection available, display the IconButton
-                                          return IconButton(
-                                            icon: Icon(Icons.image),
-                                            onPressed: () {
-                                              pickImageFromGallery();
-                                            },
-                                          );
-                                        }
-                                      } else {
-                                        // Handle other ConnectionState if necessary
-                                        return SizedBox.shrink();
-                                      }
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 30),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => HomeScreen()),
-                                    );
-                                  },
-                                  icon: Icon(Icons.arrow_back),
-                                  color: Colors.black,
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 16.0), // Adjust left padding as needed
-                                    child: RoundedLoadingButton(
-                                      controller: submitController,
-                                      successColor: Colors.green,
-                                      errorColor: Colors.red,
-                                      onPressed: () async {
-                                        submitController.start();
-                                        await Future.delayed(Duration(milliseconds: 500));
-                                        _submitIssue();
-                                      },
-                                      width: double.infinity, // Occupy all available width
-                                      elevation: 0,
-                                      borderRadius: 10,
-                                      color: Colors.black,
-                                      child: Wrap(
-                                        children: const [
-                                          Icon(
-                                            Icons.subdirectory_arrow_right_outlined,
-                                            size: 20,
-                                            color: Colors.white,
-                                          ),
-                                          SizedBox(width: 5),
-                                          Text(
-                                            "Submit Issue",
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
         ),
       ),
-    ),
-      onWillPop: () async {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
-        );
-        return false; // Prevent the default back button behavior
-      },
     );
   }
 }

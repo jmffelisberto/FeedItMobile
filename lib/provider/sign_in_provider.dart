@@ -298,19 +298,53 @@ class SignInProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void fetchUserDataByPhone() async {
+  Future<void> fetchUserDataByPhone(BuildContext context) async {
     try {
-      User user = FirebaseAuth.instance.currentUser!;
-      _name = user.displayName;
-      _email = user.email;
-      _imageUrl = user.photoURL;
-      _uid = user.uid;
-      _provider = "PHONE";
-      notifyListeners();
+      // Get the current user's UID
+      User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        throw Exception('No user currently logged in');
+      }
+
+      String uid = currentUser.uid;
+
+      // Access the "users" collection in Firestore and fetch the document with the given UID
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+      if (userSnapshot.exists) {
+        Map<String, dynamic> userData = userSnapshot.data() as Map<String, dynamic>;
+
+        // Set user data
+        _name = userData['name'];
+        _email = userData['email'];
+        _imageUrl = userData['image_url'];
+        _uid = userData['uid'];
+        _provider = "PHONE";
+
+        notifyListeners();
+
+        // Save data to SharedPreferences
+        await saveDataToSharedPreferences();
+
+        // Navigate to the home screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+      } else {
+        print("User not found");
+        throw Exception('User not found');
+      }
     } catch (e) {
-      print(e);
+      print("Error fetching user data: $e");
+      _hasError = true;
+      _errorCode = e.toString();
+      notifyListeners();
+      throw e;
     }
   }
+
+
 
   void setUser(Map<String, dynamic> snapshot) {
     _name = snapshot['name'];

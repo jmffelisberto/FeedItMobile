@@ -42,6 +42,7 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen>
       _selectTab(widget.initialTabIndex);
     });
 
+    Issue.checkInternetConnectivityPeriodically();
     // Initialize the connectivity service
     _connectivityService = ConnectivityService(onConnectionRestored: () {
       if (_localIssues.isNotEmpty) {

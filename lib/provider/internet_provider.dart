@@ -1,6 +1,8 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../utils/issue.dart';
+
 class InternetProvider extends ChangeNotifier{
   bool _hasInternet = false;
   bool get hasInternet => _hasInternet;

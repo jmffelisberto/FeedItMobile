@@ -30,8 +30,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
@@ -52,6 +50,12 @@ dependencies:
   firebase_storage: ^11.7.5
   firebase_app_check: ^0.2.2+5
   firebase_crashlytics: ^3.5.5
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/lobablogowhite.png"
 
 dev_dependencies:
   flutter_test:
