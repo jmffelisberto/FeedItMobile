@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:multilogin2/provider/analytics_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'image_uploader.dart';
@@ -58,6 +59,7 @@ class Issue {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String>? localIssuesJson = prefs.getStringList('local_issues');
     ImageUploader uploader = ImageUploader();
+    final AnalyticsService _analyticsService = AnalyticsService();
 
     if (localIssuesJson != null) {
       // Create a copy of the list to iterate over
@@ -71,6 +73,7 @@ class Issue {
         // Check if the issue has an image path
         String? imagePath = jsonIssue['imagePath'];
         if (imagePath != null && imagePath.isNotEmpty) {
+          _analyticsService.logCustomEvent(eventName: 'issue_with_image', parameters: null);
           // Upload the image to Firebase Storage
           String imageUrl = await uploader.uploadImageToStorage(imagePath);
           // Update the issue object with the image URL
@@ -80,6 +83,7 @@ class Issue {
 
         // Submit the updated issue to Firestore
         await submitIssueToFirebase(issue);
+        _analyticsService.logCustomEvent(eventName: 'issue_submit_no_connection', parameters: {'tag': issue.tag});
 
         // Remove the local issue from SharedPreferences
         localIssuesJson.remove(issueJson);

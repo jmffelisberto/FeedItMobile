@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:multilogin2/provider/analytics_service.dart';
 import 'package:multilogin2/screens/home_screen.dart';
 import 'package:multilogin2/screens/your_issues_screen.dart';
 import 'package:multilogin2/utils/issue.dart';
@@ -36,6 +37,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
   File? _imageFile;
   ImageUploader uploader = ImageUploader();
   bool hasInternetConnection = true;
+  final AnalyticsService _analyticsService = AnalyticsService();
 
 
   @override
@@ -112,6 +114,10 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
           }
           try {
             await submitIssueToFirestore(issue);
+            if (issue.image != null) {
+              _analyticsService.logCustomEvent(eventName: 'issue_with_image', parameters: null);
+            }
+            _analyticsService.logCustomEvent(eventName: 'issue_submit_w_connection', parameters: {'tag': tag});
             submitController.success();
           } catch (e) {
             print('Error submitting issue: $e');
@@ -119,6 +125,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
           }
         } else {
           await _storeLocally(issue);
+          _analyticsService.logCustomEvent(eventName: 'issue_stored_locally', parameters: {'tag': tag});
           submitController.error();
           Navigator.pushReplacement(
             context,

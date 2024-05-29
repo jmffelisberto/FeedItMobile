@@ -14,6 +14,7 @@ import 'package:provider/provider.dart';
 import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
 import 'package:multilogin2/utils/config.dart';
 
+import '../provider/analytics_service.dart';
 import '../provider/sign_in_provider.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -25,14 +26,10 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey _scaffoldKey = GlobalKey<ScaffoldState>();
-  final RoundedLoadingButtonController googleController =
-  RoundedLoadingButtonController();
-  final RoundedLoadingButtonController facebookController =
-  RoundedLoadingButtonController();
-  final RoundedLoadingButtonController phoneController =
-  RoundedLoadingButtonController();
-  final RoundedLoadingButtonController emailButtonController =
-  RoundedLoadingButtonController();
+  final RoundedLoadingButtonController googleController = RoundedLoadingButtonController();
+  final RoundedLoadingButtonController facebookController = RoundedLoadingButtonController();
+  final RoundedLoadingButtonController phoneController = RoundedLoadingButtonController();
+  final RoundedLoadingButtonController emailButtonController = RoundedLoadingButtonController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 

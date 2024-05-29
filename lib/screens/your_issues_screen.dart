@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:multilogin2/main.dart';
+import 'package:multilogin2/provider/analytics_service.dart';
 import 'package:multilogin2/provider/issue_service_provider.dart';
 import 'package:multilogin2/screens/home_screen.dart';
 import 'package:multilogin2/screens/issue_detail_screen.dart';
@@ -30,8 +31,8 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen>
   late ConnectivityService _connectivityService;
   late AnimationController _animationController;
   bool _isSubmittingLocalIssues = false;
-
   bool _hasConnection = false; // Default to true assuming initial connection
+  final AnalyticsService _analyticsService = AnalyticsService();
 
   @override
   void initState() {
@@ -133,8 +134,10 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen>
       setState(() {
         _cloudIssues = cloudIssues;
       });
-
-      print('Cloud issues fetched successfully');
+      _analyticsService.logCustomEvent(
+        eventName: 'load_cloud_issues',
+        parameters: {'count': cloudIssues.length},
+      );
     } catch (e) {
       print('Error fetching cloud issues: $e');
     }
@@ -252,6 +255,10 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen>
                   final issue = _localIssues[index];
                   return GestureDetector(
                     onTap: () {
+                      _analyticsService.logCustomEvent(
+                        eventName: 'inspect_issue',
+                        parameters: {'issue_title': issue.title},
+                      );
                       // Navigate to the issue detail page
                       Navigator.push(
                         context,
@@ -303,6 +310,10 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen>
                   final issue = itsCloudIssues[index];
                   return GestureDetector(
                     onTap: () {
+                      _analyticsService.logCustomEvent(
+                        eventName: 'inspect_issue',
+                        parameters: {'issue_title': issue.title},
+                      );
                       // Navigate to the issue detail page when tapped
                       Navigator.push(
                         context,

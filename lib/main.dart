@@ -12,41 +12,32 @@ import 'package:flutter/material.dart';
 import 'package:multilogin2/screens/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'provider/sign_in_provider.dart';
+import 'package:multilogin2/provider/analytics_service.dart';
 
 void main() async {
-  // initialize the application
   WidgetsFlutterBinding.ensureInitialized();
 
-  Platform.isAndroid
-      ? await Firebase.initializeApp(
-      options: FirebaseOptions(
-        apiKey: "AIzaSyCeAibaTC5J-9yX4FN1G4U6sTMWUuHYJiM",
-        appId: "1:418688149116:android:5f5d2e2f1affc2b6484bf9",
-        messagingSenderId: "418688149116",
-        projectId: "multilogin2-d03cd",
-        storageBucket: "gs://multilogin2-d03cd.appspot.com"
-      ))
-      : await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
-  //eliminateLocalInstances();
   await FirebaseAppCheck.instance.activate(
     webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
     androidProvider: AndroidProvider.debug,
     appleProvider: AppleProvider.appAttest,
   );
+
   FlutterError.onError = (errorDetails) {
     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
   };
-  // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+
   PlatformDispatcher.instance.onError = (error, stack) {
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     return true;
   };
 
-  runApp(const MyApp());
-  ConnectivityService();
+  runApp(MyApp());
 }
-
 
 Future<void> eliminateLocalInstances() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -54,7 +45,8 @@ Future<void> eliminateLocalInstances() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  MyApp({super.key});
+  final AnalyticsService _analyticsService = AnalyticsService();
 
   @override
   Widget build(BuildContext context) {
@@ -68,14 +60,15 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        title: 'MultiLogin',
+        navigatorObservers: [_analyticsService.getAnalyticsObserver()],
         home: WillPopScope(
           onWillPop: () async {
-            // Handle back button press
             if (Navigator.of(context).canPop()) {
               Navigator.of(context).pop();
-              return false; // Return false to indicate that we handled the back button press
+              return false;
             } else {
-              return true; // Return true to allow the default back button behavior
+              return true;
             }
           },
           child: const SplashScreen(),
@@ -84,5 +77,4 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
-
 }

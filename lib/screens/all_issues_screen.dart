@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:multilogin2/provider/analytics_service.dart';
 import 'package:multilogin2/screens/issue_detail_screen.dart';
 import 'package:multilogin2/utils/issue.dart';
 
@@ -14,15 +15,15 @@ class AllIssuesPage extends StatefulWidget {
 
 class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateMixin {
   List<Issue> _cloudIssues = [];
-  List<Issue> _localIssues = [];
   List<Issue> _filteredIssues = [];
   List<String> _tags = [];
   String _selectedTag = 'All'; // Default value for filtering
   late ConnectivityService _connectivityService;
   late AnimationController _animationController;
-  bool _isSubmittingLocalIssues = false;
 
   bool _hasConnection = false; // Default to true assuming initial connection
+
+  final AnalyticsService _analyticsService = AnalyticsService();
 
   // Cache for author details
   Map<String, Map<String, String?>> _authorDetailsCache = {};
@@ -175,6 +176,7 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
 
           return GestureDetector(
             onTap: () {
+              _analyticsService.logCustomEvent(eventName: 'inspect_issue', parameters: {'issue_title': issue.title});
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -201,7 +203,7 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
                       leading: CircleAvatar(
                         backgroundImage: profilePictureUrl.isNotEmpty
                             ? NetworkImage(profilePictureUrl)
-                            : AssetImage('assets/default_profile.png') as ImageProvider,
+                            : const AssetImage('assets/default_profile.png') as ImageProvider,
                       ),
                       title: Text(authorName),
                       subtitle: Row(

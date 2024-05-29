@@ -9,7 +9,7 @@ import 'package:multilogin2/screens/your_issues_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:multilogin2/screens/login_screen.dart';
 import 'package:multilogin2/utils/next_screen.dart';
-
+import '../provider/analytics_service.dart';
 import '../utils/config.dart';
 import 'all_issues_screen.dart';
 import 'edit_profile_screen.dart';
@@ -22,6 +22,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final AnalyticsService _analyticsService = AnalyticsService();
+
   Future getData() async {
     final sp = context.read<SignInProvider>();
     sp.getDataFromSharedPreferences();
@@ -33,10 +35,10 @@ class _HomeScreenState extends State<HomeScreen> {
     Future.microtask(() {
       final sp = context.read<SignInProvider>();
       sp.getDataFromSharedPreferences().then((_) {
-        print("Data loaded from SharedPreferences");
         if (sp.uid == null) {
           // If UID is still null, force a logout
           sp.userSignOut();
+          //TODO: Add a snackbar to notify the user that they have been signed out
           nextScreenReplace(context, const LoginScreen());
         }
       });
@@ -95,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         }
 
                         if (!snapshot.hasData || snapshot.data == null) {
-                          return SizedBox(
+                          return const SizedBox(
                             width: 120,
                             height: 120,
                             child: Icon(Icons.account_circle, size: 120),
@@ -196,26 +198,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(16), // Add padding to the margins of the screen
+                  padding: const EdgeInsets.all(16),
                   child: GridView.count(
                     crossAxisCount: 2,
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
-                    mainAxisSpacing: 16, // Add vertical spacing between buttons
-                    crossAxisSpacing: 16, // Add horizontal spacing between buttons
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
                     children: [
                       ElevatedButton(
                         onPressed: () {
+                          _analyticsService.logCustomEvent(eventName: 'read_issues_feed', parameters: null);
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => AllIssuesPage()),
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue, // Background color
+                          backgroundColor: Colors.blue,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20), // Top left rounded corner
+                              topLeft: Radius.circular(20),
                               topRight: Radius.zero,
                               bottomLeft: Radius.zero,
                               bottomRight: Radius.zero,
@@ -242,7 +245,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: const Text("Submit Issue", style: TextStyle(color: Colors.white)),
                       ),
                       ElevatedButton(
-                        onPressed: () { //change here
+                        onPressed: () {
+                          _analyticsService.logCustomEvent(eventName: 'read_own_issues', parameters: null);
                           nextScreenReplace(context, LocalIssuesScreen());
                         },
                         style: ElevatedButton.styleFrom(

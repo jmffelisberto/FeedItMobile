@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:multilogin2/provider/analytics_service.dart';
 import 'package:multilogin2/utils/next_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,6 +17,7 @@ class SignInProvider extends ChangeNotifier {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final FacebookAuth facebookAuth = FacebookAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
+  final AnalyticsService _analyticsService = AnalyticsService();
 
 
 
@@ -116,6 +119,7 @@ class SignInProvider extends ChangeNotifier {
         _imageUrl = userDetails.photoURL;
         _provider = "GOOGLE";
         _uid = userDetails.uid;
+        _analyticsService.logLogin('google');
         notifyListeners();
       } on FirebaseAuthException catch (e) {
         switch (e.code) {
@@ -165,6 +169,7 @@ class SignInProvider extends ChangeNotifier {
         _uid = firebaseAuth.currentUser!.uid;
         _hasError = false;
         _provider = "FACEBOOK";
+        _analyticsService.logLogin('facebook');
         notifyListeners();
       } on FirebaseAuthException catch (e) {
         switch (e.code) {
@@ -275,8 +280,7 @@ class SignInProvider extends ChangeNotifier {
   Future userSignOut() async {
     await firebaseAuth.signOut;
     await googleSignIn.signOut();
-    //await facebookAuth.logOut(); --com este comentário funciona
-
+    _analyticsService.logSignOut();
     _isSignedIn = false;
     notifyListeners();
     // clear all storage information
@@ -372,6 +376,7 @@ class SignInProvider extends ChangeNotifier {
       _errorCode = null;
 
       // Notify listeners
+      _analyticsService.logSignUp();
       notifyListeners();
     } catch (e) {
       _hasError = true;
@@ -394,6 +399,7 @@ class SignInProvider extends ChangeNotifier {
       setSignIn();
       // Save user data to SharedPreferences
       saveDataToSharedPreferences();
+      _analyticsService.logLogin('email');
       // Navigate to the home screen
     } catch (e) {
       if (e.toString() == 'user-not-found') {
