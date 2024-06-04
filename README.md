@@ -1,4 +1,4 @@
-# MultiLogin
+# LobaIssues
 
 Another trial for skill development purposes.
 
@@ -30,3 +30,4 @@ Another trial for skill development purposes.
 ### Analytics
 
 - Error & Crash Reporting through _Google Crashlytics_
+- User Stats & Event Logs Generated through _Google Analytics_ 
