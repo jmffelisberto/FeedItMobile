@@ -34,4 +34,4 @@ Another trial for skill development purposes.
 
 ### Documentation
 
- - To readmore detailed information about the project, please visit the DartDoc documentation [here](./doc/api/index.html) (you might need to open it directly in  a browser, after cloning the repository). 
+ - To readmore detailed information about the project, please visit the DartDoc documentation [here](./doc/api/index.html) (you might need to open it directly in a browser, after cloning the repository). 
