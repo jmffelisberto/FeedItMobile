@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the SignInProvider class from the sign_in_provider library, for the Dart programming language.">
+  <title>SignInProvider class - sign_in_provider library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">multilogin2</a></li>
+    <li><a href="../provider_sign_in_provider/provider_sign_in_provider-library.html">provider\sign_in_provider.dart</a></li>
+    <li class="self-crumb">SignInProvider class</li>
+  </ol>
+  <div class="self-name">SignInProvider</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="provider_sign_in_provider&#47;provider_sign_in_provider-library-sidebar.html"
+    data-below-sidebar="provider_sign_in_provider&#47;SignInProvider-class-sidebar.html">
+    <div>
+<h1><span class="kind-class">SignInProvider</span> class 
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p><code>SignInProvider</code> is a class that handles user sign-in operations.</p>
+<p>It uses <code>FirebaseAuth</code>, <code>FacebookAuth</code>, <code>GoogleSignIn</code>, and <code>AnalyticsService</code> to handle different sign-in methods.
+It also provides several getters and setters to access and update the user's information.</p>
+<p>Methods:</p>
+<ul>
+<li><code>SignInProvider()</code>: Constructor that checks if the user is already signed in.</li>
+<li><code>checkSignInUser()</code>: Checks if the user is already signed in.</li>
+<li><code>setSignIn()</code>: Sets the user as signed in.</li>
+<li><code>signInWithGoogle()</code>: Signs in the user with Google.</li>
+<li><code>signInWithFacebook()</code>: Signs in the user with Facebook.</li>
+<li><code>getUserDataFromFirestore(String uid)</code>: Fetches the user's data from Firestore.</li>
+<li><code>saveDataToFirestore()</code>: Saves the user's data to Firestore.</li>
+<li><code>saveDataToSharedPreferences()</code>: Saves the user's data to SharedPreferences.</li>
+<li><code>getDataFromSharedPreferences()</code>: Retrieves the user's data from SharedPreferences.</li>
+<li><code>checkUserExists()</code>: Checks if the user exists in Firestore.</li>
+<li><code>userSignOut()</code>: Signs out the user.</li>
+<li><code>clearStoredData()</code>: Clears the stored data.</li>
+<li><code>phoneNumberUser(User user, name, email)</code>: Sets the user's information for phone number sign-in.</li>
+<li><code>fetchUserDataByPhone(BuildContext context)</code>: Fetches the user's data by phone.</li>
+<li><code>setUser(Map&lt;String, dynamic&gt; snapshot)</code>: Sets the user's information.</li>
+<li><code>emailAndPassword({required String email, required String password, required String name})</code>: Signs up the user with email and password.</li>
+<li><code>handleEmailSignIn(String email, String password)</code>: Signs in the user with email and password.</li>
+</ul>
+</section>
+
+
+    <section>
+      <dl class="dl-horizontal">
+        
+  <dt>Inheritance</dt>
+  <dd>
+    <ul class="gt-separated dark clazz-relationships">
+      <li><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a></li>
+        <li><a href="https://api.flutter.dev/flutter/foundation/ChangeNotifier-class.html">ChangeNotifier</a></li>
+      <li>SignInProvider</li>
+    </ul>
+  </dd>
+
+        
+        
+
+
+
+        
+
+
+      </dl>
+    </section>
+
+    
+  <section class="summary offset-anchor" id="constructors">
+    <h2>Constructors</h2>
+
+    <dl class="constructor-summary-list">
+        <dt id="SignInProvider" class="callable">
+          <span class="name"><a href="../provider_sign_in_provider/SignInProvider/SignInProvider.html">SignInProvider</a></span><span class="signature">()</span>
+        </dt>
+        <dd>
+          
+        </dd>
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">
+        <dt id="email" class="property">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/email.html">email</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span>
+  
+
+</dt>
+<dd>
+  
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="errorCode" class="property">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/errorCode.html">errorCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span>
+  
+
+</dt>
+<dd>
+  
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="facebookAuth" class="property">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/facebookAuth.html">facebookAuth</a></span>
+  <span class="signature">&#8594; <a href="https://pub.dev/documentation/flutter_facebook_auth/6.1.1/flutter_facebook_auth/FacebookAuth-class.html">FacebookAuth</a></span>
+  
+
+</dt>
+<dd>
+  
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="firebaseAuth" class="property">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/firebaseAuth.html">firebaseAuth</a></span>
+  <span class="signature">&#8594; <a href="https://pub.dev/documentation/firebase_auth/4.17.6/firebase_auth/FirebaseAuth-class.html">FirebaseAuth</a></span>
+  
+
+</dt>
+<dd>
+  
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="googleSignIn" class="property">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/googleSignIn.html">googleSignIn</a></span>
+  <span class="signature">&#8594; <a href="https://pub.dev/documentation/google_sign_in/6.2.1/google_sign_in/GoogleSignIn-class.html">GoogleSignIn</a></span>
+  
+
+</dt>
+<dd>
+  
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="hasError" class="property">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/hasError.html">hasError</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  
+
+</dt>
+<dd>
+  
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="hashCode" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  The hash code for this object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="hasListeners" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/foundation/ChangeNotifier/hasListeners.html">hasListeners</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  Whether any listeners are currently registered.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="imageUrl" class="property">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/imageUrl.html">imageUrl</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span>
+  
+
+</dt>
+<dd>
+  
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="isSignedIn" class="property">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/isSignedIn.html">isSignedIn</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  
+
+</dt>
+<dd>
+  
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="name" class="property">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/name.html">name</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span>
+  
+
+</dt>
+<dd>
+  
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="provider" class="property">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/provider.html">provider</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span>
+  
+
+</dt>
+<dd>
+  
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Type-class.html">Type</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="uid" class="property">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/uid.html">uid</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span>
+  
+
+</dt>
+<dd>
+  
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="addListener" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/foundation/ChangeNotifier/addListener.html">addListener</a></span><span class="signature">(<wbr><span class="parameter" id="addListener-param-listener"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-ui/VoidCallback.html">VoidCallback</a></span> <span class="parameter-name">listener</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Register a closure to be called when the object changes.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="checkSignInUser" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/checkSignInUser.html">checkSignInUser</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Check if the user is already signed in
+This method checks if the user is already signed in by checking the <code>signed_in</code> key in SharedPreferences.
+If the user is signed in, it calls the <code>getDataFromSharedPreferences()</code> method to retrieve the user's information.
+If the user is not signed in, it does nothing.
+  
+
+</dd>
+
+        <dt id="checkUserExists" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/checkUserExists.html">checkUserExists</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Check if the user exists
+This method checks if the user exists in Firestore based on the user's UID.
+It uses the <code>FirebaseFirestore</code> instance to access the <code>users</code> collection and fetch the user's document.
+If the document exists, it returns <code>true</code>.
+If the document does not exist, it returns <code>false</code>.
+This method is called when the user signs in with a new account to check if the user already exists.
+  
+
+</dd>
+
+        <dt id="clearStoredData" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/clearStoredData.html">clearStoredData</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Clear stored data
+This method clears the stored data from SharedPreferences.
+It uses the <code>SharedPreferences</code> instance to clear all the stored data.
+This method is called when the user signs out from the app.
+  
+
+</dd>
+
+        <dt id="dispose" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/foundation/ChangeNotifier/dispose.html">dispose</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Discards any resources used by the object. After this is called, the
+object is not in a usable state and should be discarded (calls to
+<a href="https://api.flutter.dev/flutter/foundation/ChangeNotifier/addListener.html">addListener</a> will throw after the object is disposed).
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="emailAndPassword" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/emailAndPassword.html">emailAndPassword</a></span><span class="signature">(<wbr>{<span class="parameter" id="emailAndPassword-param-email"><span>required</span> <span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">email</span>, </span><span class="parameter" id="emailAndPassword-param-password"><span>required</span> <span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">password</span>, </span><span class="parameter" id="emailAndPassword-param-name"><span>required</span> <span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>})
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sign up with email and password
+This method signs up the user with email and password.
+It uses the <code>FirebaseAuth</code> instance to create a new user with the given email and password.
+If the sign-up is successful, it saves the user's information to the provider's variables.
+If the sign-up is unsuccessful, it sets the <code>hasError</code> variable to <code>true</code>.
+  
+
+</dd>
+
+        <dt id="fetchUserDataByPhone" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/fetchUserDataByPhone.html">fetchUserDataByPhone</a></span><span class="signature">(<wbr><span class="parameter" id="fetchUserDataByPhone-param-context"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/widgets/BuildContext-class.html">BuildContext</a></span> <span class="parameter-name">context</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Fetch user data by phone
+This method fetches the user's data from Firestore based on the user's phone number.
+It uses the <code>FirebaseFirestore</code> instance to access the <code>users</code> collection and fetch the user's document.
+If the document exists, it saves the user's information to the provider's variables.
+If the document does not exist, it sets the <code>hasError</code> variable to <code>true</code>.
+This method is called when the user signs in with a phone number.
+  
+
+</dd>
+
+        <dt id="getDataFromSharedPreferences" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/getDataFromSharedPreferences.html">getDataFromSharedPreferences</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Get user data from SharedPreferences
+This method retrieves the user's data from SharedPreferences.
+It uses the <code>SharedPreferences</code> instance to get the user's information.
+If the data is retrieved successfully, it prints a message to the console.
+If there is an error retrieving the data, it prints an error message to the console.
+This method is called when the app is opened to check if the user is already signed in.
+  
+
+</dd>
+
+        <dt id="getUserDataFromFirestore" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/getUserDataFromFirestore.html">getUserDataFromFirestore</a></span><span class="signature">(<wbr><span class="parameter" id="getUserDataFromFirestore-param-uid"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">uid</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Fetch user data from Firestore
+This method fetches the user's data from Firestore based on the user's UID.
+It uses the <code>FirebaseFirestore</code> instance to access the <code>users</code> collection and fetch the user's document.
+If the document exists, it saves the user's information to the provider's variables.
+If the document does not exist, it prints a message to the console.
+  
+
+</dd>
+
+        <dt id="handleEmailSignIn" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/handleEmailSignIn.html">handleEmailSignIn</a></span><span class="signature">(<wbr><span class="parameter" id="handleEmailSignIn-param-email"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">email</span>, </span><span class="parameter" id="handleEmailSignIn-param-password"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">password</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sign in with email and password
+This method signs in the user with email and password.
+It uses the <code>FirebaseAuth</code> instance to sign in the user with the given email and password.
+If the sign-in is successful, it fetches the user's data from Firestore based on the UID.
+If the sign-in is unsuccessful, it throws an error message.
+  
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Invocation-class.html">Invocation</a></span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="notifyListeners" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/foundation/ChangeNotifier/notifyListeners.html">notifyListeners</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Call all the registered listeners.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="phoneNumberUser" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/phoneNumberUser.html">phoneNumberUser</a></span><span class="signature">(<wbr><span class="parameter" id="phoneNumberUser-param-user"><span class="type-annotation"><a href="https://pub.dev/documentation/firebase_auth/4.17.6/firebase_auth/User-class.html">User</a></span> <span class="parameter-name">user</span>, </span><span class="parameter" id="phoneNumberUser-param-name"><span class="type-annotation">dynamic</span> <span class="parameter-name">name</span>, </span><span class="parameter" id="phoneNumberUser-param-email"><span class="type-annotation">dynamic</span> <span class="parameter-name">email</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Set the user's information for phone number sign-in
+It saves the user's information to the provider's variables.
+  
+
+</dd>
+
+        <dt id="removeListener" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/foundation/ChangeNotifier/removeListener.html">removeListener</a></span><span class="signature">(<wbr><span class="parameter" id="removeListener-param-listener"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-ui/VoidCallback.html">VoidCallback</a></span> <span class="parameter-name">listener</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Remove a previously registered closure from the list of closures that are
+notified when the object changes.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="saveDataToFirestore" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/saveDataToFirestore.html">saveDataToFirestore</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Save user data to Firestore
+This method saves the user's data to Firestore.
+It uses the <code>FirebaseFirestore</code> instance to access the <code>users</code> collection and save the user's document.
+If the data is saved successfully, it prints a message to the console.
+If there is an error saving the data, it prints an error message to the console.
+This method is called after the user signs in with a new account.
+  
+
+</dd>
+
+        <dt id="saveDataToSharedPreferences" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/saveDataToSharedPreferences.html">saveDataToSharedPreferences</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Save user data to SharedPreferences
+This method saves the user's data to SharedPreferences.
+It uses the <code>SharedPreferences</code> instance to save the user's information.
+If the data is saved successfully, it prints a message to the console.
+If there is an error saving the data, it prints an error message to the console.
+This method is called after the user signs in with a new account.
+It is used to keep the user signed in even after the app is closed.
+  
+
+</dd>
+
+        <dt id="setHasError" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/setHasError.html">setHasError</a></span><span class="signature">(<wbr><span class="parameter" id="setHasError-param-value"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="setSignIn" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/setSignIn.html">setSignIn</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Set the user as signed in
+This method sets the user as signed in by setting the <code>signed_in</code> key in SharedPreferences to <code>true</code>.
+It also updates the <code>_isSignedIn</code> variable and notifies the listeners.
+This method is called after the user successfully signs in.
+It is used to keep the user signed in even after the app is closed.
+  
+
+</dd>
+
+        <dt id="setUser" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/setUser.html">setUser</a></span><span class="signature">(<wbr><span class="parameter" id="setUser-param-snapshot"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>, <span class="type-parameter">dynamic</span>&gt;</span></span> <span class="parameter-name">snapshot</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Set user data
+This method sets the user's information based on the snapshot data.
+It saves the user's information to the provider's variables.
+It notifies the listeners to update the UI.
+  
+
+</dd>
+
+        <dt id="signInWithFacebook" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/signInWithFacebook.html">signInWithFacebook</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sign in with Facebook
+This method signs in the user with Facebook.
+It uses the <code>facebookAuth</code> instance to authenticate the user.
+If the sign-in is successful, it saves the user's information to the provider's variables.
+If the sign-in is unsuccessful, it sets the <code>hasError</code> variable to <code>true</code>.
+  
+
+</dd>
+
+        <dt id="signInWithGoogle" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/signInWithGoogle.html">signInWithGoogle</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sign in with Google
+This method signs in the user with Google.
+It uses the <code>googleSignIn</code> and <code>firebaseAuth</code> instances to authenticate the user.
+If the sign-in is successful, it saves the user's information to the provider's variables.
+If the sign-in is unsuccessful, it sets the <code>hasError</code> variable to <code>true</code>.
+  
+
+</dd>
+
+        <dt id="toString" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A string representation of this object.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="updateEmail" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/updateEmail.html">updateEmail</a></span><span class="signature">(<wbr><span class="parameter" id="updateEmail-param-newEmail"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">newEmail</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="updateErrorCode" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/updateErrorCode.html">updateErrorCode</a></span><span class="signature">(<wbr><span class="parameter" id="updateErrorCode-param-newErrorCode"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">newErrorCode</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="updateImage" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/updateImage.html">updateImage</a></span><span class="signature">(<wbr><span class="parameter" id="updateImage-param-newimageUrl"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">newimageUrl</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="updateName" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/updateName.html">updateName</a></span><span class="signature">(<wbr><span class="parameter" id="updateName-param-newName"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">newName</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="updateProvider" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/updateProvider.html">updateProvider</a></span><span class="signature">(<wbr><span class="parameter" id="updateProvider-param-newProvider"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">newProvider</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="updateUid" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/updateUid.html">updateUid</a></span><span class="signature">(<wbr><span class="parameter" id="updateUid-param-newUid"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">newUid</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="userSignOut" class="callable">
+  <span class="name"><a href="../provider_sign_in_provider/SignInProvider/userSignOut.html">userSignOut</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sign out the user
+This method signs out the user by calling the <code>signOut</code> method on the <code>firebaseAuth</code> instance.
+It also calls the <code>signOut</code> method on the <code>googleSignIn</code> instance to sign out the user from Google.
+It logs the sign-out event using the <code>AnalyticsService</code> instance.
+It sets the <code>_isSignedIn</code> variable to <code>false</code> and notifies the listeners.
+This method is called when the user signs out from the app.
+  
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  The equality operator.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+    
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">multilogin2</a></li>
+    <li><a href="../provider_sign_in_provider/provider_sign_in_provider-library.html">sign_in_provider</a></li>
+    <li class="self-crumb">SignInProvider class</li>
+</ol>
+
+
+    <h5>sign_in_provider library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    multilogin2
+      1.0.0+1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

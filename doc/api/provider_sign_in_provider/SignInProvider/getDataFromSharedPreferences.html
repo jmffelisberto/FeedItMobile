@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the getDataFromSharedPreferences method from the SignInProvider class, for the Dart programming language.">
+  <title>getDataFromSharedPreferences method - SignInProvider class - sign_in_provider library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">multilogin2</a></li>
+    <li><a href="../../provider_sign_in_provider/provider_sign_in_provider-library.html">provider\sign_in_provider.dart</a></li>
+    <li><a href="../../provider_sign_in_provider/SignInProvider-class.html">SignInProvider</a></li>
+    <li class="self-crumb">getDataFromSharedPreferences method</li>
+  </ol>
+  <div class="self-name">getDataFromSharedPreferences</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="provider_sign_in_provider&#47;SignInProvider-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">getDataFromSharedPreferences</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+
+<span class="returntype"><a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+<span class="name ">getDataFromSharedPreferences</span>(<wbr>)
+
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Get user data from SharedPreferences
+This method retrieves the user's data from SharedPreferences.
+It uses the <code>SharedPreferences</code> instance to get the user's information.
+If the data is retrieved successfully, it prints a message to the console.
+If there is an error retrieving the data, it prints an error message to the console.
+This method is called when the app is opened to check if the user is already signed in.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">Future&lt;void&gt; getDataFromSharedPreferences() async {
+  final SharedPreferences s = await SharedPreferences.getInstance();
+  _name = s.getString(&#39;name&#39;);
+  _email = s.getString(&#39;email&#39;);
+  _imageUrl = s.getString(&#39;image_url&#39;);
+  _uid = s.getString(&#39;uid&#39;);
+  _provider = s.getString(&#39;provider&#39;);
+  notifyListeners();
+  print(&quot;User data retrieved from SharedPreferences: $_name, $_email, $_provider&quot;);
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">multilogin2</a></li>
+    <li><a href="../../provider_sign_in_provider/provider_sign_in_provider-library.html">sign_in_provider</a></li>
+    <li><a href="../../provider_sign_in_provider/SignInProvider-class.html">SignInProvider</a></li>
+    <li class="self-crumb">getDataFromSharedPreferences method</li>
+</ol>
+
+
+    <h5>SignInProvider class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    multilogin2
+      1.0.0+1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+
