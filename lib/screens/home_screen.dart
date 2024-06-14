@@ -14,6 +14,11 @@ import '../utils/config.dart';
 import 'all_issues_screen.dart';
 import 'edit_profile_screen.dart';
 
+/// Builds the widget tree for this screen.
+///
+/// It displays a form with a field for the user's email address.
+/// It also provides a button to submit the form.
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -38,7 +43,6 @@ class _HomeScreenState extends State<HomeScreen> {
         if (sp.uid == null) {
           // If UID is still null, force a logout
           sp.userSignOut();
-          //TODO: Add a snackbar to notify the user that they have been signed out
           nextScreenReplace(context, const LoginScreen());
         }
       });
@@ -52,6 +56,10 @@ class _HomeScreenState extends State<HomeScreen> {
         .snapshots();
   }
 
+  /// Builds the widget tree for this screen.
+  ///
+  /// It displays the user's profile picture, name, and email or phone number.
+  /// It also displays buttons to navigate to the All Issues, Submit Issue, Your Issues, and Sign Out screens.
   @override
   Widget build(BuildContext context) {
     final sp = context.watch<SignInProvider>();
@@ -68,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             title: Text("Dashboard", style: GoogleFonts.exo2()),
-            centerTitle: true,// Change the title as needed
+            centerTitle: true,
           ),
           body: Center(
             child: Column(

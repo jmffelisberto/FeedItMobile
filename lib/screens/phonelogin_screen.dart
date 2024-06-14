@@ -12,6 +12,17 @@ class PhoneLoginScreen extends StatefulWidget {
   _PhoneLoginScreenState createState() => _PhoneLoginScreenState();
 }
 
+/// `PhoneLoginScreen` is a class that displays the phone login form.
+///
+/// It uses `FirebaseAuth` to handle phone number verification and `SignInProvider` to fetch user data.
+/// It also provides several methods to handle form submissions and phone number verification.
+///
+/// Methods:
+/// - `build(BuildContext context)`: Builds the widget tree for this screen.
+/// - `_sendCode(BuildContext context)`: Sends a verification code to the entered phone number.
+/// - `_verifyCode(BuildContext context)`: Verifies the entered OTP code.
+/// - `_fetchUserData(BuildContext context)`: Fetches the user data after successful phone number verification.
+
 class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
   TextEditingController phoneController = TextEditingController();
   TextEditingController otpCodeController = TextEditingController();
@@ -19,6 +30,7 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
   final RoundedLoadingButtonController verifyCodeController = RoundedLoadingButtonController();
   String verificationId = '';
 
+  /// `build` method builds the widget tree for this screen.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +43,7 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               'Phone Number:',
@@ -45,13 +57,17 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
               ),
             ),
             SizedBox(height: 16),
-            RoundedLoadingButton(
-              onPressed: () => _sendCode(context),
-              controller: sendCodeController,
-              color: Colors.blue,
-              successColor: Colors.green,
-              errorColor: Colors.red,
-              child: Text('Send Code', style: TextStyle(color: Colors.white)),
+            Container(
+              width: 140,
+              child: RoundedLoadingButton(
+                width: 140,
+                onPressed: () => _sendCode(context),
+                controller: sendCodeController,
+                color: Colors.black,
+                successColor: Colors.green,
+                errorColor: Colors.red,
+                child: Text('Send Code', style: TextStyle(color: Colors.white)),
+              ),
             ),
             SizedBox(height: 32),
             Text(
@@ -66,13 +82,17 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
               ),
             ),
             SizedBox(height: 16),
-            RoundedLoadingButton(
-              onPressed: () => _verifyCode(context),
-              controller: verifyCodeController,
-              color: Colors.blue,
-              successColor: Colors.green,
-              errorColor: Colors.red,
-              child: Text('Verify Code', style: TextStyle(color: Colors.white)),
+            Container(
+              width: 140,
+              child: RoundedLoadingButton(
+                width: 140,
+                onPressed: () => _verifyCode(context),
+                controller: verifyCodeController,
+                color: Colors.black,
+                successColor: Colors.green,
+                errorColor: Colors.red,
+                child: Text('Verify Code', style: TextStyle(color: Colors.white)),
+              ),
             ),
           ],
         ),
@@ -80,7 +100,8 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
     );
   }
 
-
+  /// `_sendCode` method sends a verification code to the entered phone number.
+  /// It uses `FirebaseAuth` to send the code and handles the success and error cases.
   void _sendCode(BuildContext context) async {
     String phone = phoneController.text.trim();
     sendCodeController.start();
@@ -115,6 +136,8 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
     }
   }
 
+  /// `_verifyCode` method verifies the entered OTP code.
+  /// It uses `FirebaseAuth` to verify the code and handles the success and error cases.
   void _verifyCode(BuildContext context) async {
     String code = otpCodeController.text.trim();
     verifyCodeController.start();
@@ -133,6 +156,8 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
     }
   }
 
+  /// `_fetchUserData` method fetches the user data after successful phone number verification.
+  /// It uses `SignInProvider` to fetch the user data and handles the error cases.
   void _fetchUserData(BuildContext context) async {
     try {
       final signInProvider = context.read<SignInProvider>();

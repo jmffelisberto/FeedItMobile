@@ -17,6 +17,20 @@ import 'package:multilogin2/utils/config.dart';
 import '../provider/analytics_service.dart';
 import '../provider/sign_in_provider.dart';
 
+/// `LoginScreen` is a class that displays the login form.
+///
+/// It uses `FirebaseAuth`, `SignInProvider`, and `InternetProvider` to handle user authentication.
+/// It also provides several methods to handle user interactions, form submissions, and navigation between screens.
+///
+/// Methods:
+/// - `initState()`: Initializes the state of the widget.
+/// - `handleGoogleSignIn()`: Handles user authentication with Google.
+/// - `handleFacebookAuth()`: Handles user authentication with Facebook.
+/// - `handleEmailSignIn()`: Handles user authentication with email and password.
+/// - `_showPhoneAuthOptionsModal(BuildContext context)`: Shows a modal with options for phone authentication.
+/// - `handleAfterSignIn()`: Handles navigation after successful sign-in.
+/// - `build(BuildContext context)`: Builds the widget tree for this screen.
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
@@ -34,6 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
 
 
+  /// Initializes the state of the widget.
   @override
   Widget build(BuildContext context) {
     SignInProvider sp = context.watch<SignInProvider>();
@@ -90,8 +105,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(60),
-                              topRight: Radius.circular(60),
+                              topLeft: Radius.circular(30), //changed to 30, was 60
+                              topRight: Radius.circular(30),
                             ),
                           ),
                           child: Padding(
@@ -173,7 +188,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                     style: TextStyle(
                                       fontSize: 10,
                                       color: Colors.grey,
-                                      decoration: TextDecoration.underline, // Optionally add underline
                                     ),
                                   ),
                                 ),
@@ -314,6 +328,11 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  /// Handles user authentication with Google.
+  /// It uses `SignInProvider` and `InternetProvider` to check the internet connection and sign in with Google.
+  /// It also checks whether the user exists or not and saves the user data to Firestore and SharedPreferences.
+  /// It then navigates to the `HomeScreen` after successful sign-in.
+  /// If there is no internet connection, it displays a snackbar with an error message.
   Future handleGoogleSignIn() async {
     final signInProvider = context.read<SignInProvider>();
     final internetProvider = context.read<InternetProvider>();
@@ -357,6 +376,11 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  /// Handles user authentication with Facebook.
+  /// It uses `SignInProvider` and `InternetProvider` to check the internet connection and sign in with Facebook.
+  /// It also checks whether the user exists or not and saves the user data to Firestore and SharedPreferences.
+  /// It then navigates to the `HomeScreen` after successful sign-in.
+  /// If there is no internet connection, it displays a snackbar with an error message.
   Future handleFacebookAuth() async {
     final signInProvider = context.read<SignInProvider>();
     final internetProvider = context.read<InternetProvider>();
@@ -400,6 +424,12 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  /// Handles user authentication with email and password.
+  /// It uses `FirebaseAuth` to sign in with email and password.
+  /// It then navigates to the `HomeScreen` after successful sign-in.
+  /// If there is no user found for the email or the password is wrong, it displays a snackbar with an error message.
+  /// If the sign-in is successful, it returns the user data.
+  /// If the sign-in is unsuccessful, it returns null.
   Future<User?> handleEmailSignIn() async {
     try {
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -432,6 +462,9 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  /// Shows a modal with options for phone authentication.
+  /// It uses `PhoneRegisterScreen` and `PhoneLoginScreen` to navigate to the respective screens.
+  /// It also resets the `phoneController` to close the modal.
   void _showPhoneAuthOptionsModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -502,8 +535,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
 
-
-  // handle after signin
+  /// Handles navigation after successful sign-in.
   handleAfterSignIn() {
     Future.delayed(const Duration(milliseconds: 1000)).then((value) {
       nextScreenReplace(context, const HomeScreen());

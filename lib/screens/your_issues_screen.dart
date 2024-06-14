@@ -15,6 +15,21 @@ import 'package:multilogin2/screens/issue_detail_screen.dart';
 import 'package:multilogin2/utils/issue.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// `LocalIssuesScreen` is a class that displays the local and cloud issues of the user.
+///
+/// It uses `FirebaseAuth` and `FirebaseFirestore` to fetch the issues and `SharedPreferences` to store local issues.
+/// It also provides several methods to handle issue fetching, time formatting, and navigation.
+///
+/// Methods:
+/// - `initState()`: Initializes the state of the widget. It loads local issues and fetches cloud issues.
+/// - `_selectTab(int index)`: Selects the specified tab in the tab bar.
+/// - `_loadLocalIssues()`: Loads local issues from `SharedPreferences`.
+/// - `_fetchCloudIssues()`: Fetches cloud issues from Firestore and submits local issues to the cloud.
+/// - `_loadCloudIssues()`: Fetches cloud issues from Firestore.
+/// - `_buildTagContainer(String tag)`: Builds a container for the specified tag with a specific color based on the tag.
+/// - `getTimeElapsed(Timestamp? createdAt)`: Returns a string representing the time elapsed since the issue was created.
+/// - `build(BuildContext context)`: Builds the widget tree for this screen.
+
 class LocalIssuesScreen extends StatefulWidget {
   final int initialTabIndex;
 
@@ -68,10 +83,12 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen>
     super.dispose();
   }
 
+  /// Selects the specified tab in the tab bar.
   void _selectTab(int index) {
     DefaultTabController.of(context)?.animateTo(index);
   }
 
+  /// Loads local issues from `SharedPreferences`.
   Future<void> _loadLocalIssues() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String>? localIssuesJson = prefs.getStringList('local_issues');
@@ -84,6 +101,10 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen>
       _localIssues = [];
   }
 
+  /// Fetches cloud issues from Firestore and submits local issues to the cloud.
+  /// It also removes local issues from `SharedPreferences` and reloads local issues to reflect changes.
+  /// It also checks connectivity and updates `_hasConnection` accordingly.
+  /// It sets `_isSubmittingLocalIssues` to true to trigger the rotating icon and false to stop it.
   void _fetchCloudIssues() async {
     // Set _isSubmittingLocalIssues to true to trigger the rotating icon
     _isSubmittingLocalIssues = true;
@@ -112,6 +133,10 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen>
     setState(() {});
   }
 
+  /// Removes local issues from `SharedPreferences`.
+  /// It also updates the local issues list and logs a custom event.
+  /// It is called after submitting local issues to the cloud.
+  /// It is used to prevent duplicate issues in the cloud.
   Future<void> _loadCloudIssues() async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -143,7 +168,7 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen>
     }
   }
 
-
+  /// Builds a container for the specified tag with a specific color based on the tag.
   Widget _buildTagContainer(String tag) {
     Color color;
     switch (tag) {
@@ -153,7 +178,12 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen>
       case 'Leisure':
         color = Colors.yellow;
         break;
-    // Add more cases for other tags as needed
+      case 'Health':
+        color = Colors.green;
+        break;
+      case 'Event':
+        color = Colors.brown;
+        break;
       default:
         color = Colors.grey; // Default color
     }
@@ -171,6 +201,12 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen>
     );
   }
 
+  /// Returns a string representing the time elapsed since the issue was created.
+  /// It returns 'just now' if the difference is less than 60 seconds.
+  /// It returns 'x mins. ago' if the difference is less than 60 minutes.
+  /// It returns 'x hours ago' if the difference is less than 24 hours.
+  /// It returns 'yesterday' if the difference is 1 day.
+  /// Otherwise, it returns 'x days ago'.
   String getTimeElapsed(Timestamp? createdAt) {
     if (createdAt == null) return ''; // Handle null createdAt
 
@@ -191,6 +227,7 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen>
     }
   }
 
+  /// Builds the widget tree for this screen.
   @override
   Widget build(BuildContext context) {
     var itsCloudIssues = _cloudIssues

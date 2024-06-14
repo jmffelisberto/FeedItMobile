@@ -8,6 +8,24 @@ import 'package:multilogin2/utils/issue.dart';
 
 import '../provider/issue_service_provider.dart';
 
+/// `AllIssuesPage` is a class that displays all the issues fetched from Firestore.
+///
+/// It uses `ConnectivityService` to check for internet connectivity and `AnalyticsService` to log events.
+/// It also provides several methods to fetch and filter issues, fetch author details, and handle user interactions.
+///
+/// Methods:
+/// - `initState()`: Initializes the state of the widget. It loads the cloud issues and starts the connectivity service.
+/// - `_loadCloudIssues()`: Fetches the issues from Firestore and stores them in `_cloudIssues`.
+/// - `_cacheAuthorDetails()`: Caches the author details for each issue.
+/// - `_extractTags()`: Extracts the unique tags from the issues.
+/// - `_filterIssuesByTag(String tag)`: Filters the issues by the specified tag.
+/// - `fetchAuthorProfilePicture(String uid)`: Fetches the profile picture URL of the author with the specified UID.
+/// - `fetchAuthorName(String uid)`: Fetches the name of the author with the specified UID.
+/// - `build(BuildContext context)`: Builds the widget tree for this screen.
+/// - `_buildTagContainer(String tag)`: Builds a container for the specified tag with a specific color based on the tag.
+/// - `_getTagColor(String tag)`: Returns a color based on the specified tag.
+/// - `getTimeElapsed(Timestamp? createdAt)`: Returns a string representing the time elapsed since the issue was created.
+
 class AllIssuesPage extends StatefulWidget {
   @override
   _AllIssuesPageState createState() => _AllIssuesPageState();
@@ -43,6 +61,9 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
     )..repeat();
   }
 
+  /// Fetches the issues from Firestore and stores them in `_cloudIssues`.
+  /// Also caches the author details for each issue and extracts the unique tags from the issues.
+  /// Finally, initializes the `_filteredIssues` list with all issues.
   Future<void> _loadCloudIssues() async {
     try {
       QuerySnapshot querySnapshot =
@@ -70,6 +91,9 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
     }
   }
 
+  /// Caches the author details for each issue.
+  /// The author details include the author's name and profile picture URL.
+  /// The author details are stored in the `_authorDetailsCache` map with the author's UID as the key.
   Future<void> _cacheAuthorDetails() async {
     for (var issue in _cloudIssues) {
       if (!_authorDetailsCache.containsKey(issue.uid)) {
@@ -80,11 +104,17 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
     }
   }
 
+  /// Extracts the unique tags from the issues and stores them in the `_tags` list.
+  /// The `_tags` list is used to populate the dropdown menu for filtering issues by tag.
   void _extractTags() {
     Set<String> uniqueTags = Set.from(_cloudIssues.map((issue) => issue.tag));
     _tags = ['All', ...uniqueTags.toList()]; // Add 'All' option to the beginning
   }
 
+  /// Filters the issues by the specified tag.
+  /// The filtered issues are stored in the `_filteredIssues` list.
+  /// If the tag is 'All', all issues are displayed.
+  /// Otherwise, only the issues with the specified tag are displayed.
   void _filterIssuesByTag(String tag) {
     setState(() {
       _selectedTag = tag;
@@ -96,7 +126,10 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
     });
   }
 
-  // Function to fetch the author's profile picture URL
+  /// Fetches the profile picture URL of the author with the specified UID.
+  /// Returns the profile picture URL if available, otherwise returns null.
+  /// If an error occurs during the fetch operation, the error is printed and null is returned.
+  /// The author's profile picture URL is fetched from the 'users' collection in Firestore.
   Future<String?> fetchAuthorProfilePicture(String uid) async {
     try {
       // Access the "users" collection in Firestore and fetch the document with the given UID
@@ -116,7 +149,9 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
     }
   }
 
-  // Function to fetch the author's name
+  /// Fetches the name of the author with the specified UID.
+  /// Returns the author's name if available, otherwise returns null.
+  /// If an error occurs during the fetch operation, the error is printed and null is returned.
   Future<String?> fetchAuthorName(String uid) async {
     try {
       // Access the "users" collection in Firestore and fetch the document with the given UID
@@ -127,15 +162,14 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
         // Return the author's name if available
         return userData?['name'];
       }
-      // Return null if the document doesn't exist or doesn't contain a name field
       return null;
     } catch (e) {
-      // Handle any errors that occur during the fetch operation
       print('Error fetching author name: $e');
       return null;
     }
   }
 
+  /// Builds the widget tree for this screen.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -228,7 +262,9 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
     );
   }
 
-  // Function to build tag container with specific color based on tag
+  /// Builds a container for the specified tag with a specific color based on the tag.
+  /// The tag container is used to display the tag of an issue with a colored background.
+  /// The color of the container is determined based on the tag name.
   Widget _buildTagContainer(String tag) {
     Color tagColor = _getTagColor(tag);
     return Container(
@@ -244,20 +280,29 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
     );
   }
 
-  // Function to get tag color based on tag name
+  /// Returns a color based on the specified tag.
+  /// The color is determined based on the tag name.
+  /// The color is used to display the tag of an issue with a colored background.
   Color _getTagColor(String tag) {
     switch (tag.toLowerCase()) {
       case 'work':
         return Colors.orange;
       case 'leisure':
         return Colors.yellow;
-    // Add more cases for other tags and their respective colors
+      case 'health':
+        return Colors.green;
+      case 'finance':
+        return Colors.blue;
+      case 'event':
+        return Colors.brown;
       default:
         return Colors.grey;
     }
   }
 
-  // Function to display time elapsed since issue submission
+  /// Returns a string representing the time elapsed since the issue was created.
+  /// The time elapsed is calculated based on the difference between the current time and the creation time of the issue.
+  /// The time elapsed is displayed in a human-readable format, such as 'just now', '5 minutes ago', 'yesterday', etc.
   String getTimeElapsed(Timestamp? createdAt) {
     if (createdAt == null) return ''; // Handle null createdAt
 

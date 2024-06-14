@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+/// `ForgotPasswordScreen` is a class that displays the password reset form.
+///
+/// It uses `FirebaseAuth` to handle password reset requests.
+/// It also provides a method to handle form submissions.
+///
+/// Methods:
+/// - `initState()`: Initializes the state of the widget.
+/// - `_resetPassword()`: Sends a password reset email to the entered email address.
+/// - `build(BuildContext context)`: Builds the widget tree for this screen.
+
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({Key? key}) : super(key: key);
 
@@ -11,6 +21,12 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final TextEditingController _emailController = TextEditingController();
 
+  /// Sends a password reset email to the entered email address.
+  ///
+  /// It first checks if the email field is not empty.
+  /// If the email field is not empty, it sends a password reset email to the entered email address.
+  /// After sending the email, it shows a success message.
+  /// If an error occurs, it shows an error message.
   Future<void> _resetPassword() async {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(
@@ -32,6 +48,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     }
   }
 
+  /// Builds the widget tree for this screen.
+  ///
+  /// It displays a form with a field for the user's email address.
+  /// It also provides a button to submit the form.
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -9,6 +9,16 @@ import '../provider/sign_in_provider.dart';
 import '../utils/next_screen.dart';
 import 'home_screen.dart';
 
+/// `CreateAccountScreen` is a class that displays the user registration form.
+///
+/// It uses `SignInProvider` to handle user registration and `Navigator` to navigate between screens.
+/// It also provides several methods to handle user interactions and form submissions.
+///
+/// Methods:
+/// - `initState()`: Initializes the state of the widget.
+/// - `dispose()`: Disposes the controllers when the widget is removed from the widget tree.
+/// - `build(BuildContext context)`: Builds the widget tree for this screen.
+
 class CreateAccountScreen extends StatefulWidget {
   const CreateAccountScreen({Key? key}) : super(key: key);
 
@@ -80,7 +90,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                           const SizedBox(height: 40),
                           Text(
                             "Create Your Account",
-                            style: GoogleFonts.exo2(fontSize: 25),
+                            style: GoogleFonts.exo2(fontSize: 25, fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 5),
                           const Text(
@@ -99,8 +109,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(60),
-                              topRight: Radius.circular(60),
+                              topLeft: Radius.circular(30),
+                              topRight: Radius.circular(30),
                             ),
                           ),
                           child: Padding(
@@ -198,12 +208,15 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                                   children: [
                                     IconButton(
                                       onPressed: () {
-                                        Navigator.of(context).pop();
+                                        Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                                        );
                                       },
                                       icon: Icon(Icons.arrow_back),
                                       color: Colors.black,
                                     ),
-                                    Expanded( // Add Expanded widget here
+                                    Expanded(
                                       child: ElevatedButton(
                                         onPressed: () async {
                                           if (_passwordController.text !=

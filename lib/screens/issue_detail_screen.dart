@@ -3,6 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:multilogin2/utils/issue.dart';
 
+/// `IssueDetailPage` is a class that displays the details of a specific issue.
+///
+/// It uses `FirebaseFirestore` to fetch the author's details and `ImageProvider` to display the author's profile picture.
+/// It also provides several methods to fetch author details, format timestamps, and build tag containers.
+///
+/// Methods:
+/// - `initState()`: Initializes the state of the widget. It fetches the author's details.
+/// - `_fetchAuthorDetails()`: Fetches the author's name and profile picture URL.
+/// - `fetchAuthorProfilePicture(String uid)`: Fetches the profile picture URL of the author with the specified UID.
+/// - `fetchAuthorName(String uid)`: Fetches the name of the author with the specified UID.
+/// - `_buildTagContainer(String tag)`: Builds a container for the specified tag with a specific color based on the tag.
+/// - `formatTimestamp(Timestamp? timestamp)`: Returns a string representing the formatted timestamp.
+/// - `_getMonthAbbreviation(int month)`: Returns a 3-letter abbreviation of the specified month.
+/// - `build(BuildContext context)`: Builds the widget tree for this screen.
+
 class IssueDetailPage extends StatefulWidget {
   final Issue issue;
 
@@ -22,6 +37,8 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
     _fetchAuthorDetails();
   }
 
+  /// Fetches the author's details.
+  /// It fetches the author's name and profile picture URL using the `fetchAuthorName` and `fetchAuthorProfilePicture` methods.
   Future<void> _fetchAuthorDetails() async {
     String? name = await fetchAuthorName(widget.issue.uid);
     String? imageUrl = await fetchAuthorProfilePicture(widget.issue.uid);
@@ -31,7 +48,8 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
     });
   }
 
-  // Function to fetch the author's profile picture URL
+  /// Fetches the profile picture URL of the author with the specified UID.
+  /// Returns the profile picture URL if it exists, otherwise returns `null`.
   Future<String?> fetchAuthorProfilePicture(String uid) async {
     try {
       DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
@@ -46,7 +64,8 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
     }
   }
 
-  // Function to fetch the author's name
+  /// Fetches the name of the author with the specified UID.
+  /// Returns the name if it exists, otherwise returns `null`.
   Future<String?> fetchAuthorName(String uid) async {
     try {
       DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
@@ -61,6 +80,7 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
     }
   }
 
+  /// Builds a container for the specified tag with a specific color based on the tag.
   Widget _buildTagContainer(String tag) {
     Color color;
     switch (tag) {
@@ -88,6 +108,9 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
     );
   }
 
+  /// Returns a string representing the formatted timestamp.
+  /// The timestamp is formatted as `day month at hours:minutes`.
+  /// Example: `15 Jan at 12:30`
   String formatTimestamp(Timestamp? timestamp) {
     if (timestamp == null) return '';
 
@@ -108,6 +131,7 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
     return '$day $month at $hours:$minutes';
   }
 
+  /// Returns a 3-letter abbreviation of the specified month.
   String _getMonthAbbreviation(int month) {
     switch (month) {
       case 1:
@@ -139,6 +163,7 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
     }
   }
 
+  /// Builds the widget tree for this screen.
   @override
   Widget build(BuildContext context) {
     return Scaffold(

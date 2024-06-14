@@ -12,6 +12,29 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../screens/home_screen.dart';
 
+/// `SignInProvider` is a class that handles user sign-in operations.
+///
+/// It uses `FirebaseAuth`, `FacebookAuth`, `GoogleSignIn`, and `AnalyticsService` to handle different sign-in methods.
+/// It also provides several getters and setters to access and update the user's information.
+///
+/// Methods:
+/// - `SignInProvider()`: Constructor that checks if the user is already signed in.
+/// - `checkSignInUser()`: Checks if the user is already signed in.
+/// - `setSignIn()`: Sets the user as signed in.
+/// - `signInWithGoogle()`: Signs in the user with Google.
+/// - `signInWithFacebook()`: Signs in the user with Facebook.
+/// - `getUserDataFromFirestore(String uid)`: Fetches the user's data from Firestore.
+/// - `saveDataToFirestore()`: Saves the user's data to Firestore.
+/// - `saveDataToSharedPreferences()`: Saves the user's data to SharedPreferences.
+/// - `getDataFromSharedPreferences()`: Retrieves the user's data from SharedPreferences.
+/// - `checkUserExists()`: Checks if the user exists in Firestore.
+/// - `userSignOut()`: Signs out the user.
+/// - `clearStoredData()`: Clears the stored data.
+/// - `phoneNumberUser(User user, name, email)`: Sets the user's information for phone number sign-in.
+/// - `fetchUserDataByPhone(BuildContext context)`: Fetches the user's data by phone.
+/// - `setUser(Map<String, dynamic> snapshot)`: Sets the user's information.
+/// - `emailAndPassword({required String email, required String password, required String name})`: Signs up the user with email and password.
+/// - `handleEmailSignIn(String email, String password)`: Signs in the user with email and password.
 class SignInProvider extends ChangeNotifier {
 
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
@@ -78,6 +101,10 @@ class SignInProvider extends ChangeNotifier {
     checkSignInUser();
   }
 
+  /// Check if the user is already signed in
+  /// This method checks if the user is already signed in by checking the `signed_in` key in SharedPreferences.
+  /// If the user is signed in, it calls the `getDataFromSharedPreferences()` method to retrieve the user's information.
+  /// If the user is not signed in, it does nothing.
   Future checkSignInUser() async {
     final SharedPreferences s = await SharedPreferences.getInstance();
     _isSignedIn = s.getBool("signed_in") ?? false;
@@ -87,6 +114,11 @@ class SignInProvider extends ChangeNotifier {
     }//changed
   }
 
+  /// Set the user as signed in
+  /// This method sets the user as signed in by setting the `signed_in` key in SharedPreferences to `true`.
+  /// It also updates the `_isSignedIn` variable and notifies the listeners.
+  /// This method is called after the user successfully signs in.
+  /// It is used to keep the user signed in even after the app is closed.
   Future setSignIn() async {
     final SharedPreferences s = await SharedPreferences.getInstance();
     s.setBool("signed_in", true);
@@ -94,7 +126,11 @@ class SignInProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // sign in with google
+  /// Sign in with Google
+  /// This method signs in the user with Google.
+  /// It uses the `googleSignIn` and `firebaseAuth` instances to authenticate the user.
+  /// If the sign-in is successful, it saves the user's information to the provider's variables.
+  /// If the sign-in is unsuccessful, it sets the `hasError` variable to `true`.
   Future signInWithGoogle() async {
     final GoogleSignInAccount? googleSignInAccount =
     await googleSignIn.signIn();
@@ -148,7 +184,11 @@ class SignInProvider extends ChangeNotifier {
     }
   }
 
-  // sign in with facebook
+  /// Sign in with Facebook
+  /// This method signs in the user with Facebook.
+  /// It uses the `facebookAuth` instance to authenticate the user.
+  /// If the sign-in is successful, it saves the user's information to the provider's variables.
+  /// If the sign-in is unsuccessful, it sets the `hasError` variable to `true`.
   Future signInWithFacebook() async {
     final LoginResult result = await facebookAuth.login();
     // getting the profile
@@ -199,7 +239,11 @@ class SignInProvider extends ChangeNotifier {
 
 
 
-  // ENTRY FOR CLOUDFIRESTORE
+  /// Fetch user data from Firestore
+  /// This method fetches the user's data from Firestore based on the user's UID.
+  /// It uses the `FirebaseFirestore` instance to access the `users` collection and fetch the user's document.
+  /// If the document exists, it saves the user's information to the provider's variables.
+  /// If the document does not exist, it prints a message to the console.
   Future<void> getUserDataFromFirestore(String uid) async {
     try {
       DocumentSnapshot snapshot = await FirebaseFirestore.instance
@@ -222,6 +266,12 @@ class SignInProvider extends ChangeNotifier {
     }
   }
 
+  /// Save user data to Firestore
+  /// This method saves the user's data to Firestore.
+  /// It uses the `FirebaseFirestore` instance to access the `users` collection and save the user's document.
+  /// If the data is saved successfully, it prints a message to the console.
+  /// If there is an error saving the data, it prints an error message to the console.
+  /// This method is called after the user signs in with a new account.
   Future<void> saveDataToFirestore() async {
     try {
       final DocumentReference r = FirebaseFirestore.instance.collection("users").doc(uid);
@@ -239,7 +289,13 @@ class SignInProvider extends ChangeNotifier {
     }
   }
 
-  //shared preferences gets & sets
+  /// Save user data to SharedPreferences
+  /// This method saves the user's data to SharedPreferences.
+  /// It uses the `SharedPreferences` instance to save the user's information.
+  /// If the data is saved successfully, it prints a message to the console.
+  /// If there is an error saving the data, it prints an error message to the console.
+  /// This method is called after the user signs in with a new account.
+  /// It is used to keep the user signed in even after the app is closed.
   Future<void> saveDataToSharedPreferences() async {
     final SharedPreferences s = await SharedPreferences.getInstance();
     await s.setString('name', _name!);
@@ -251,6 +307,12 @@ class SignInProvider extends ChangeNotifier {
     print("User data saved to SharedPreferences");
   }
 
+  /// Get user data from SharedPreferences
+  /// This method retrieves the user's data from SharedPreferences.
+  /// It uses the `SharedPreferences` instance to get the user's information.
+  /// If the data is retrieved successfully, it prints a message to the console.
+  /// If there is an error retrieving the data, it prints an error message to the console.
+  /// This method is called when the app is opened to check if the user is already signed in.
   Future<void> getDataFromSharedPreferences() async {
     final SharedPreferences s = await SharedPreferences.getInstance();
     _name = s.getString('name');
@@ -263,7 +325,12 @@ class SignInProvider extends ChangeNotifier {
   }
 
 
-  // checkUser exists or not in cloudfirestore
+  /// Check if the user exists
+  /// This method checks if the user exists in Firestore based on the user's UID.
+  /// It uses the `FirebaseFirestore` instance to access the `users` collection and fetch the user's document.
+  /// If the document exists, it returns `true`.
+  /// If the document does not exist, it returns `false`.
+  /// This method is called when the user signs in with a new account to check if the user already exists.
   Future<bool> checkUserExists() async {
     DocumentSnapshot snap =
     await FirebaseFirestore.instance.collection('users').doc(_uid).get();
@@ -276,7 +343,12 @@ class SignInProvider extends ChangeNotifier {
     }
   }
 
-  // signout
+  /// Sign out the user
+  /// This method signs out the user by calling the `signOut` method on the `firebaseAuth` instance.
+  /// It also calls the `signOut` method on the `googleSignIn` instance to sign out the user from Google.
+  /// It logs the sign-out event using the `AnalyticsService` instance.
+  /// It sets the `_isSignedIn` variable to `false` and notifies the listeners.
+  /// This method is called when the user signs out from the app.
   Future userSignOut() async {
     await firebaseAuth.signOut;
     await googleSignIn.signOut();
@@ -287,11 +359,17 @@ class SignInProvider extends ChangeNotifier {
     clearStoredData();
   }
 
+  /// Clear stored data
+  /// This method clears the stored data from SharedPreferences.
+  /// It uses the `SharedPreferences` instance to clear all the stored data.
+  /// This method is called when the user signs out from the app.
   Future clearStoredData() async {
     final SharedPreferences s = await SharedPreferences.getInstance();
     s.clear();
   }
 
+  /// Set the user's information for phone number sign-in
+  /// It saves the user's information to the provider's variables.
   void phoneNumberUser(User user, name, email) {
     _name = name;
     _email = email;
@@ -302,6 +380,12 @@ class SignInProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Fetch user data by phone
+  /// This method fetches the user's data from Firestore based on the user's phone number.
+  /// It uses the `FirebaseFirestore` instance to access the `users` collection and fetch the user's document.
+  /// If the document exists, it saves the user's information to the provider's variables.
+  /// If the document does not exist, it sets the `hasError` variable to `true`.
+  /// This method is called when the user signs in with a phone number.
   Future<void> fetchUserDataByPhone(BuildContext context) async {
     try {
       // Get the current user's UID
@@ -349,7 +433,10 @@ class SignInProvider extends ChangeNotifier {
   }
 
 
-
+  /// Set user data
+  /// This method sets the user's information based on the snapshot data.
+  /// It saves the user's information to the provider's variables.
+  /// It notifies the listeners to update the UI.
   void setUser(Map<String, dynamic> snapshot) {
     _name = snapshot['name'];
     _email = snapshot['email'];
@@ -359,6 +446,11 @@ class SignInProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Sign up with email and password
+  /// This method signs up the user with email and password.
+  /// It uses the `FirebaseAuth` instance to create a new user with the given email and password.
+  /// If the sign-up is successful, it saves the user's information to the provider's variables.
+  /// If the sign-up is unsuccessful, it sets the `hasError` variable to `true`.
   Future<void> emailAndPassword({required String email, required String password, required String name}) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -387,6 +479,11 @@ class SignInProvider extends ChangeNotifier {
     }
   }
 
+  /// Sign in with email and password
+  /// This method signs in the user with email and password.
+  /// It uses the `FirebaseAuth` instance to sign in the user with the given email and password.
+  /// If the sign-in is successful, it fetches the user's data from Firestore based on the UID.
+  /// If the sign-in is unsuccessful, it throws an error message.
   Future<void> handleEmailSignIn(String email, String password) async {
     try {
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(

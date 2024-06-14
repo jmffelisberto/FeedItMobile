@@ -1,7 +1,16 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 
+/// `ImageUploader` is a class that handles the uploading of images to Firebase Storage.
+///
+/// It provides a method to upload an image to Firebase Storage and return the download URL of the uploaded image.
+///
+/// Methods:
+/// - `uploadImageToStorage(String imagePath)`: Uploads the image at the specified path to Firebase Storage and returns the download URL of the uploaded image.
+
 class ImageUploader {
+
+  /// Uploads the image at the specified path to Firebase Storage and returns the download URL of the uploaded image.
   Future<String> uploadImageToStorage(String imagePath) async {
     // Generate a unique image name
     String imageName = DateTime.now().millisecondsSinceEpoch.toString();

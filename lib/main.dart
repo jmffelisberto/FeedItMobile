@@ -14,6 +14,11 @@ import 'package:provider/provider.dart';
 import 'provider/sign_in_provider.dart';
 import 'package:multilogin2/provider/analytics_service.dart';
 
+/// The entry point of the application.
+///
+/// This function ensures that Firebase is initialized before the application runs.
+/// It also sets up error handling for Flutter and the platform dispatcher.
+/// Finally, it runs the `MyApp` widget, which is the root of your widget tree.
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -39,11 +44,19 @@ void main() async {
   runApp(MyApp());
 }
 
+/// Eliminates local instances.
+///
+/// This function removes 'local_issues' from shared preferences.
 Future<void> eliminateLocalInstances() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.remove('local_issues');
 }
 
+/// The root widget of the application.
+///
+/// This widget is a `MultiProvider` that provides `SignInProvider` and `InternetProvider` to the rest of the widget tree.
+/// It also sets up the `AnalyticsService` for Firebase Analytics.
+/// The home of the `MaterialApp` is a `WillPopScope` widget that handles the Android back button.
 class MyApp extends StatelessWidget {
   MyApp({super.key});
   final AnalyticsService _analyticsService = AnalyticsService();
@@ -60,7 +73,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        title: 'MultiLogin',
+        title: 'Loba Issues',
         navigatorObservers: [_analyticsService.getAnalyticsObserver()],
         home: WillPopScope(
           onWillPop: () async {

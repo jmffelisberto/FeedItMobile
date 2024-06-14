@@ -31,3 +31,7 @@ Another trial for skill development purposes.
 
 - Error & Crash Reporting through _Google Crashlytics_
 - User Stats & Event Logs Generated through _Google Analytics_ 
+
+### Documentation
+
+ - To readmore detailed information about the project, please visit the DartDoc documentation [here](./doc/api/index.html). 

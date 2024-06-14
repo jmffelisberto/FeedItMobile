@@ -9,6 +9,16 @@ import '../utils/config.dart';
 import '../utils/next_screen.dart';
 import 'login_screen.dart';
 
+/// `PhoneRegisterScreen` is a class that displays the phone registration form.
+///
+/// It uses `FirebaseAuth` to handle phone number registration and `SignInProvider` to handle user information.
+/// It also provides several methods to handle form submissions and phone number verification.
+///
+/// Methods:
+/// - `initState()`: Initializes the state of the widget.
+/// - `login(BuildContext context, String mobile)`: Initiates the phone number verification process.
+/// - `build(BuildContext context)`: Builds the widget tree for this screen.
+
 class PhoneRegisterScreen extends StatefulWidget {
   const PhoneRegisterScreen({Key? key}) : super(key: key);
 
@@ -24,6 +34,7 @@ class _PhoneRegisterScreenState extends State<PhoneRegisterScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController otpCodeController = TextEditingController();
 
+  /// `initState` initializes the state of the widget.
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -156,9 +167,13 @@ class _PhoneRegisterScreenState extends State<PhoneRegisterScreen> {
                       login(context, phoneController.text.trim());
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
+                      backgroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: EdgeInsets.only(left: 16, right: 16), // Remove o padding interno
                     ),
-                    child: const Text("Register"),
+                    child: const Text("Register", style: TextStyle(color: Colors.white)),
                   )
                 ],
               ),
@@ -169,7 +184,7 @@ class _PhoneRegisterScreenState extends State<PhoneRegisterScreen> {
     );
   }
 
-
+  /// `login` initiates the phone number verification process.
   Future login(BuildContext context, String mobile) async {
     final signInProvider = context.read<SignInProvider>();
     final internetProvider = context.read<InternetProvider>();

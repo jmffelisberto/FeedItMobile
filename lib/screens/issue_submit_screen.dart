@@ -20,6 +20,22 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart' as path;
 import '../utils/image_uploader.dart';
 
+/// `SubmitIssueScreen` is a class that displays the issue submission form.
+///
+/// It uses `FirebaseAuth` to get the current user, `FirebaseFirestore` to submit the issue,
+/// `ImagePicker` to select an image from the gallery, and `Connectivity` to check the internet connection.
+/// It also provides several methods to handle form submissions, image selection, and internet connection checking.
+///
+/// Methods:
+/// - `initState()`: Initializes the state of the widget.
+/// - `dispose()`: Disposes the controllers when the widget is removed from the widget tree.
+/// - `checkInternetConnection()`: Checks the internet connection and updates the `hasInternetConnection` state.
+/// - `pickImageFromGallery()`: Opens the image picker and sets the selected image as the issue image.
+/// - `_storeLocally(Issue issue)`: Stores the issue locally if there is no internet connection.
+/// - `_submitIssue()`: Validates the form and submits the issue.
+/// - `submitIssueToFirestore(Issue issue)`: Submits the issue to Firestore.
+/// - `build(BuildContext context)`: Builds the widget tree for this screen.
+
 class SubmitIssueScreen extends StatefulWidget {
   const SubmitIssueScreen({Key? key}) : super(key: key);
 
@@ -32,7 +48,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
   late TextEditingController _descriptionController = TextEditingController();
   late TextEditingController _tagController = TextEditingController();
   late String _selectedTag;
-  final List<String> _tagOptions = ['Work', 'Leisure', 'Other'];
+  final List<String> _tagOptions = ['Work', 'Leisure', 'Health', 'Event', 'Other'];
   final RoundedLoadingButtonController submitController = RoundedLoadingButtonController();
   File? _imageFile;
   ImageUploader uploader = ImageUploader();
@@ -58,6 +74,8 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     super.dispose();
   }
 
+  /// Checks the internet connection and updates the `hasInternetConnection` state.
+  /// This method uses the `Connectivity` plugin to check the internet connection.
   Future<void> checkInternetConnection() async {
     var connectivityResult = await Connectivity().checkConnectivity();
     setState(() {
@@ -65,6 +83,9 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     });
   }
 
+  /// Opens the image picker and sets the selected image as the issue image.
+  /// This method uses the `ImagePicker` plugin to open the image picker.
+  /// The selected image is stored in the `_imageFile` state.
   Future<void> pickImageFromGallery() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -75,6 +96,8 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     }
   }
 
+  /// Stores the issue locally if there is no internet connection.
+  /// This method uses the `SharedPreferences` plugin to store the issue locally.
   Future<void> _storeLocally(Issue issue) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     Map<String, dynamic> jsonIssue = issue.toJson();
@@ -89,6 +112,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     await prefs.setStringList('local_issues', localIssues);
   }
 
+  /// Validates the form and submits the issue to Firestore.
   void _submitIssue() async {
     String title = _titleController.text.trim();
     String description = _descriptionController.text.trim();
@@ -141,7 +165,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     }
   }
 
-
+  /// Submits the issue to Firestore.
   Future<void> submitIssueToFirestore(Issue issue) async {
     try {
       await FirebaseFirestore.instance.collection('issues').add(issue.toJson());
@@ -166,6 +190,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     }
   }
 
+  /// Builds the widget tree for this screen.
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -227,8 +252,8 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(60),
-                            topRight: Radius.circular(60),
+                            topLeft: Radius.circular(30),
+                            topRight: Radius.circular(30),
                           ),
                         ),
                         child: Padding(
