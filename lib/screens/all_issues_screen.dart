@@ -288,7 +288,7 @@ class _AllIssuesPageState extends State<AllIssuesPage> with TickerProviderStateM
       case 'work':
         return Colors.orange;
       case 'leisure':
-        return Colors.yellow;
+        return Colors.red;
       case 'health':
         return Colors.green;
       case 'finance':

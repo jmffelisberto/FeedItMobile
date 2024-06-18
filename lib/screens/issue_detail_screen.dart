@@ -88,9 +88,17 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
         color = Colors.orange;
         break;
       case 'Leisure':
-        color = Colors.yellow;
+        color = Colors.red;
         break;
-    // Add more cases for other tags as needed
+      case 'Health':
+        color = Colors.green;
+        break;
+      case 'Finance':
+        color = Colors.blue;
+        break;
+      case 'Event':
+        color = Colors.brown;
+        break;
       default:
         color = Colors.grey; // Default color
     }

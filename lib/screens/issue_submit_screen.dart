@@ -48,7 +48,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
   late TextEditingController _descriptionController = TextEditingController();
   late TextEditingController _tagController = TextEditingController();
   late String _selectedTag;
-  final List<String> _tagOptions = ['Work', 'Leisure', 'Health', 'Event', 'Other'];
+  final List<String> _tagOptions = ['Work', 'Leisure', 'Health', 'Finance', 'Event', 'Other'];
   final RoundedLoadingButtonController submitController = RoundedLoadingButtonController();
   File? _imageFile;
   ImageUploader uploader = ImageUploader();

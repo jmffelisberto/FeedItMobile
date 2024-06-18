@@ -176,10 +176,13 @@ class _LocalIssuesScreenState extends State<LocalIssuesScreen>
         color = Colors.orange;
         break;
       case 'Leisure':
-        color = Colors.yellow;
+        color = Colors.red;
         break;
       case 'Health':
         color = Colors.green;
+        break;
+      case 'Finance':
+        color = Colors.blue;
         break;
       case 'Event':
         color = Colors.brown;
