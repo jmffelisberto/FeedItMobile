@@ -1,6 +1,6 @@
-# LobaIssues
+# FeedItMobile
 
-Repo for Flutter app developed in collaboration with [LOBA](https://www.loba.com), in the context of an academic internship for [Projeto Integrador](https://sigarra.up.pt/feup/pt/ucurr_geral.ficha_uc_view?pv_ocorrencia_id=520335) @ FEUP.
+Repo for Flutter app developed in the context of an academic internship for [Projeto Integrador](https://sigarra.up.pt/feup/pt/ucurr_geral.ficha_uc_view?pv_ocorrencia_id=520335) @ FEUP.
 
 ## Features
 
